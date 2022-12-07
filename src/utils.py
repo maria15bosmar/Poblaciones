@@ -1,3 +1,5 @@
+import pandas as pd
+
 MAYORIA_EDAD = 25
 # PATHS
 PATH_DATOS = "antiguo/"
@@ -28,3 +30,20 @@ DIFERENCIAS_EDAD = [
 ]
 
 CANTIDAD_DIFERENCIA = [(0, 1), (-1), (2, 3), (-2, -3), (4, 5)]
+PROB_TRABAJO = [(0.25, 0.75)]
+
+def leer_catastro(distrito):
+    df = pd.read_csv(PATH_CATASTRO + "casasd" + str(distrito)+ ".csv", delimiter=";", header=None)
+    casas_g = df.loc[df.iloc[:,-1]>TAM_CASAS[1]].iloc[:,:-1].values.tolist()
+    casas_p = df.loc[df.iloc[:,-1]<TAM_CASAS[0]].iloc[:,:-1].values.tolist()
+    casas_m = df.loc[(df.iloc[:,-1]<=TAM_CASAS[1]) & (df.iloc[:,-1]>=TAM_CASAS[0])].iloc[:,:-1].values.tolist()
+    return casas_g, casas_m, casas_p
+
+def leer_censo(distrito):
+    """ Returns population datasets. """
+    df = pd.read_csv(PATH_CENSO + "distrito_" + str(distrito)+ ".csv", delimiter=";")
+    hombres = df.iloc[25:,0].to_numpy().sum()
+    mujeres = df.iloc[25:,1].to_numpy().sum()
+    ninyos = df.iloc[:25,0].to_numpy().sum()
+    ninyas = df.iloc[:25,1].to_numpy().sum()
+    return df.iloc[:,0], df.iloc[:,1], hombres, mujeres, ninyos, ninyas

@@ -4,14 +4,10 @@ import numpy as np
 from familia import Familia
 from persona import Persona
 
-def leer_censo(distrito):
-    """ Returns population datasets. """
-    df = pd.read_csv(PATH_CENSO + "distrito_" + str(distrito)+ ".csv", delimiter=";")
-    hombres = df.iloc[25:,0].to_numpy().sum()
-    mujeres = df.iloc[25:,1].to_numpy().sum()
-    ninyos = df.iloc[:25,0].to_numpy().sum()
-    ninyas = df.iloc[:25,1].to_numpy().sum()
-    return df.iloc[:,0], df.iloc[:,1], hombres, mujeres, ninyos, ninyas
+id_pers = 0
+id_fams = 0
+lista_familias = []
+personas = []
 
 # GUARDAR POBLACIÓN
 censo = leer_censo(1)
@@ -19,13 +15,8 @@ poblacion = np.array([censo[0], censo[1]])
 ciudadanos = []
 for i in censo[2:]:
     ciudadanos.append(i)
-personas = []
-def leer_catastro(distrito):
-    df = pd.read_csv(PATH_CATASTRO + "casasd" + str(distrito)+ ".csv", delimiter=";", header=None)
-    casas_g = df.loc[df.iloc[:,-1]>TAM_CASAS[1]].iloc[:,:-1].values.tolist()
-    casas_p = df.loc[df.iloc[:,-1]<TAM_CASAS[0]].iloc[:,:-1].values.tolist()
-    casas_m = df.loc[(df.iloc[:,-1]<=TAM_CASAS[1]) & (df.iloc[:,-1]>=TAM_CASAS[0])].iloc[:,:-1].values.tolist()
-    return casas_g[:5], casas_m[:5], casas_p[:5]
+casas = leer_catastro(1)
+
 
 def elegir_personas(lista, edadmin, edadmax, genero):
     """ Devuelve una edad factible para una persona. """
@@ -131,11 +122,15 @@ def parejador(poblacion, hay_ninyos, personas):
         age_range1 = np.random.choice(len(PORC_EDAD), 1, p=PORC_EDAD)[0]
     # Se elige la edad de la primera persona aleatoriamente según su rango de edad.
     # Tener en cuenta la diferencia de edad madre/hijo para madres jóvenes.
-    if age_range1 == 0 and hay_ninyos!=0:
-        if hay_ninyos < 18:
-            age1 = 18
-        else:
-            age1 = hay_ninyos
+    if age_range1 == 0:
+        if hay_ninyos!=0:
+            if hay_ninyos < 18:
+                age1 = 18
+            else:
+                age1 = hay_ninyos
+        if quasiadultos(poblacion, 2)[1] == 0:
+            age1=25
+        
     else:
         aux = RANGOS_EDAD[age_range1]
         age1 = np.random.randint(aux, aux+5)
@@ -172,6 +167,25 @@ def parejador(poblacion, hay_ninyos, personas):
     age2 = elegir_personas(poblacion, age2, -2, tipo[1])
     # ---- AGREGAR A PERSONAS
     return age1, age2
+
+def tipodefamilia(tamfamilia, empleo, niños, monopar):
+    if tamfamilia == 1 and empleo == 0 and niños == 0:                      #Unipersonal    EnelParo    Sinniños
+        tipo = 1
+    elif tamfamilia == 1 and empleo == 1 and niños == 0:                    #Unipersonal    Trabajando  Sinniños
+        tipo = 2
+    elif tamfamilia >= 2 and empleo == 0 and niños == 0:                    #Multipersonal  EnelParo    Sinniños
+        tipo = 3
+    elif tamfamilia >= 2 and empleo == 1 and niños == 0:                    #Multipersonal  Trabajando  Sinniños
+        tipo = 4
+    elif tamfamilia >= 2 and empleo == 0 and niños == 1 and monopar == 1:   #Multipersonal  EnelParo    Conniños    Monoparental
+        tipo = 5
+    elif tamfamilia >= 2 and empleo == 0 and niños == 1 and monopar == 0:   #Multipersonal  EnelParo    Conniños    NoMonoparental
+        tipo = 6
+    elif tamfamilia >= 2 and empleo == 1 and niños == 1 and monopar == 1:   #Multipersonal  Trabajando  Conniños    Monoparental
+        tipo = 7
+    elif tamfamilia >= 2 and empleo == 1 and niños == 1 and monopar == 0:   #Multipersonal  Trabajando  Conniños    NoMonoparental
+        tipo = 8
+    return tipo
 
 def simplificador(generos, edadmin, edadmax, poblacion):
     """ Calcular edad de los hermanos. """
@@ -216,7 +230,7 @@ def siguientes_hijos(poblacion, edad1, n_ninyos, id_pers, personas=None):
     return hijos
 
 def familiador(poblacion):
-    global ciudadanos
+    global ciudadanos, id_pers, id_fams, lista_familias
     personas = []
     PORC_FAMILIAS = [0.257, 0.302, 0.201, 0.176, 0.039, 0.015, 0.01]
     n_pers = np.random.choice(range(1,8), 1, p=PORC_FAMILIAS)[0]
@@ -241,6 +255,12 @@ def familiador(poblacion):
             else:
                 genero = np.random.choice(2, 1, p=[1-genre_prob, genre_prob])[0]
         unipersonal = elegir_personas(poblacion, RANGOS_EDAD[edad], RANGOS_EDAD[edad+1]-1, genero)
+        pers = Persona(id_pers, unipersonal, genero)
+        trabajo = np.random.choice(2, p=PROB_TRABAJO[0])
+        tipo_fam = tipodefamilia(n_pers, trabajo, 0, -1)
+        lista_familias.append(Familia(id_fams, [pers], casas, tipo_fam))
+        id_pers += 1
+        id_fams += 1
         # AGREGAR A FAMILIA Y CONTAR PERSONA ETC
 
     # FAMILIA DE DOS PERSONAS
@@ -273,6 +293,25 @@ def familiador(poblacion):
                 PORC_GENERO = [.303, 0.277, 0.42]
                 elecciones = ((0, 0), (1, 1), (0, 1))
                 generos = np.random.choice(3, 1, p=PORC_GENERO)[0]
+                #quasi
+                if edad == 0:
+                    if censo[0] > 1 and censo[1] > 1:
+                        h, m = quasiadultos(poblacion, 2)
+                        # Si no quedan personas de un determinado género, se fija al que haya o se cambia la edad.
+                        if h == 0 and m == 0:
+                            edad = 1
+                        elif h == 1 and m == 1:
+                            generos[0] = 0
+                            generos[1] = 1
+                        elif m == 0 and h >= 2:
+                            generos[0] = 0
+                            generos[1] = 0
+                        elif h == 0 and m >= 2:
+                            generos[0] = 1
+                            generos[1] = 1
+                    else:
+                        edad = 1
+                #quasi
                 edades = simplificador(elecciones[generos], RANGOS_EDAD[edad], RANGOS_EDAD[edad+1]-1, poblacion)
                 # AGREGAR A FAMILIA Y CONTAR PERSONA ETC
             if subtipo == 2:
