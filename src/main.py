@@ -1,4 +1,4 @@
-from constantes import *
+from utils import *
 import pandas as pd
 import numpy as np
 from familia import Familia
@@ -103,6 +103,17 @@ def sexador_hijos(numero):
         return generos[0]
     return generos
 
+def quasiadultos (poblacion, cantidad):
+    boolean = [0, 0]
+    i = 18
+    # Arriba se comprobó si hay adultos pero no si hay personas de 18 a 24 aquí se hace la comprobación.
+    while i <= 24 and (boolean[0] < cantidad or boolean[1] < cantidad): 
+        for gen in range(2):
+            if poblacion[gen][i] > 1:
+                boolean[gen] += poblacion[gen][i]
+        i += 1
+    return boolean
+
 def probabilidad_disminuida(min, max):
     return round(np.random.beta(2,5)*(max-min)+min)
 
@@ -144,14 +155,14 @@ def parejador(poblacion, hay_ninyos, personas):
             diferencia = probabilidad_disminuida(diferencia_base, diferencia_base+5)
             if tipo_pareja == 5:
                 diferencia*=-1
-            '''
-            probabilities = np.arange(.3, .09, -0.05)
-            if tipo_pareja == 4:
-                diferencia = np.random.choice(range(diferencia_base, diferencia_base+5), 1, p=probabilities)[0]
-            else:
-                diferencia = np.random.choice(range(diferencia_base, diferencia_base-5, -1), 1, p=probabilities)[0]
-            '''
     age2 = age1 + diferencia
+    ages = [age2, age1]
+    # Se comprueba que existan dos por genero para parejas homosexuales.
+    if age1 <= 24 or age2 <= 24:
+        gens = quasiadultos(poblacion, 2)
+        for i in range(2):
+            if gens[i] < 2 and ages[i] <= 24:
+                ages[i] = 25
     # Se elige tipo de pareja.
     # --- Si solo hay hombres, gay. Si solo hay mujeres, lesbianas. Si hay uno de cada, heteros.
     PROC_TIPO_PAREJA = [0.009, 0.004, 0.987]
@@ -184,8 +195,6 @@ def simplificador(generos, edadmin, edadmax, poblacion):
     # Encontrar una edad factible para el segundo hermano.
     edades.append(elegir_personas(poblacion, edadprimero+asumar, -3, generos[1]))
     return edades
-
-
 
 def siguientes_hijos(poblacion, edad1, n_ninyos, id_pers, personas=None):
     global ciudadanos
@@ -220,7 +229,17 @@ def familiador(poblacion):
         # seleccionamos edad y género.
         edad = np.random.choice(len(PORC_EDAD), 1, p=PORC_EDAD)[0]
         genre_prob = PORC_GENERO[edad]
-        genero = np.random.choice(2, 1, p=[1-genre_prob, genre_prob])[0]
+        if edad == 0:
+            h, m = quasiadultos(poblacion, 1)
+            # Si no quedan personas de un determinado género, se fija al que haya.
+            if h == 0 and m == 0:
+                edad = 1
+            if h <= 0:
+                genero = 1
+            if m <= 0:
+                genero = 0
+            else:
+                genero = np.random.choice(2, 1, p=[1-genre_prob, genre_prob])[0]
         unipersonal = elegir_personas(poblacion, RANGOS_EDAD[edad], RANGOS_EDAD[edad+1]-1, genero)
         # AGREGAR A FAMILIA Y CONTAR PERSONA ETC
 
