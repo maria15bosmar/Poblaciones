@@ -10,7 +10,12 @@ class Familia:
     self.personas = personas
     self.casa = self.coordenadas(personas, tipos_casas)
     self.tipofamilia = tipofamilia
-    print("Se ha creado la familia " + str(self.id_familia) + " que se compone de " + str(self.personas)  + " y que se ubica en " + str(self.casa))
+    """
+    print("Se ha creado la familia " + str(self.id_familia) + " que se compone de ")
+    for i in self.personas:
+      print(f"- {i}")
+    print("y que se ubica en " + str(self.casa))
+    """
 
   def coordenadas(self, personas, tipos_casas):
     """ Returns some coordinates of a house. """

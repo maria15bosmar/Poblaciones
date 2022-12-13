@@ -10,7 +10,7 @@ PATH_CATASTRO = PATH_DATOS + "Catastro/"
 TAM_CASAS = (60, 100)
 
 # PERSONAS
-RANGOS_EDAD = [18, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90]
+RANGOS_EDAD = [18, 25, 35, 45, 55, 65, 75, 85, 96]
 DIFERENCIAS_EDAD = [
     (.1916, 0.0, .1159, 0.0, .6925),
     (.2373, .0322, .0768, .0146, .6391),
@@ -30,7 +30,8 @@ DIFERENCIAS_EDAD = [
 ]
 
 CANTIDAD_DIFERENCIA = [(0, 1), (-1), (2, 3), (-2, -3), (4, 5)]
-PROB_TRABAJO = [(0.25, 0.75)]
+PROB_TRABAJO = (0.255, (0.269, 0.259, 0.22, (0.403, 0.825)), (0.183, 0.045, 0.042), 
+    (0.208, 0.01, 0.019), (0.027, 0))
 
 def leer_catastro(distrito):
     df = pd.read_csv(PATH_CATASTRO + "casasd" + str(distrito)+ ".csv", delimiter=";", header=None)
