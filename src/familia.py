@@ -1,4 +1,3 @@
-import random
 import numpy as np
 # Probability of house size given a number of members.
 TIPOS_CASA = [(0.146, 0.736, 0.118), (0.09, 0.743, 0.167), (0.055, 0.751, 0.194),
@@ -20,7 +19,7 @@ class Familia:
   def coordenadas(self, personas, tipos_casas):
     """ Returns some coordinates of a house. """
     coordenadas = []
-    num_per = len(personas)#/3
+    num_per = len(personas)
     selected = np.random.choice(range(3), 1, p=TIPOS_CASA[num_per])[0]
     lista = tipos_casas[selected]
     coordenadas = lista.pop(0)
