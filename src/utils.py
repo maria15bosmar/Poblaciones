@@ -48,3 +48,9 @@ def leer_censo(distrito):
     ninyos = df.iloc[:25,0].to_numpy().sum()
     ninyas = df.iloc[:25,1].to_numpy().sum()
     return df.iloc[:,0], df.iloc[:,1], hombres, mujeres, ninyos, ninyas
+
+num_to_xml = [
+    ["m", "f"],
+    [["yes", "always"], ["no", "never"]],
+    ["no", "yes", "no", "yes", "no", "no", "yes", "yes"]
+]
