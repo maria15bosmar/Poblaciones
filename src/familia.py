@@ -30,6 +30,6 @@ class Familia:
 
     return coordenadas
 
-def sort_personas(self):
-  self.personas.sort(reverse=True, key = lambda p: p.edad)
+  def sort_personas(self):
+    self.personas.sort(reverse=True, key = lambda p: p.edad)
 

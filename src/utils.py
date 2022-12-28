@@ -8,6 +8,10 @@ PATH_CONSORCIO = PATH_DATOS + "Consorcio/"
 PATH_CATASTRO = PATH_DATOS + "Catastro/"
 
 TAM_CASAS = (60, 100)
+MAX_X = 438447
+MAX_Y = 4462216
+MIN_X = 432447
+MIN_Y = 4468216
 
 # PERSONAS
 RANGOS_EDAD = [18, 25, 35, 45, 55, 65, 75, 85, 96]
@@ -34,7 +38,8 @@ PROB_TRABAJO = (0.255, (0.269, 0.259, 0.22, (0.403, 0.825)), (0.183, 0.045, 0.04
     (0.208, 0.01, 0.019), (0.027, 0))
 
 def leer_catastro(distrito):
-    df = pd.read_csv(PATH_CATASTRO + "casasd" + str(distrito)+ ".csv", delimiter=";", header=None)
+    df = pd.read_csv(PATH_CATASTRO + "casasd" + str(distrito)+ ".csv")
+    df[["x", "y"]] = df[["x", "y"]] / 100
     casas_g = df.loc[df.iloc[:,-1]>TAM_CASAS[1]].iloc[:,:-1].values.tolist()
     casas_p = df.loc[df.iloc[:,-1]<TAM_CASAS[0]].iloc[:,:-1].values.tolist()
     casas_m = df.loc[(df.iloc[:,-1]<=TAM_CASAS[1]) & (df.iloc[:,-1]>=TAM_CASAS[0])].iloc[:,:-1].values.tolist()
@@ -49,8 +54,46 @@ def leer_censo(distrito):
     ninyas = df.iloc[:25,1].to_numpy().sum()
     return df.iloc[:,0], df.iloc[:,1], hombres, mujeres, ninyos, ninyas
 
+def buscar_clave(hash_table: dict, clave: int):
+    """ Devuelve el valor corresponiente a una clave en un diccionario
+        de claves compuestas. """
+    for i in hash_table.keys():
+        if (type(i) == tuple and clave in i) or (clave == i):
+            return hash_table[i]
+
+# PLANEADOR
+all_cols = ["id_hog","id_per", "id_via", "sexo", "trabajo", "carnet", 
+                    "hora_ini", "hora_fin", "mot_origen", "mot_destino", "vehiculo", "edad", 
+                    "num_veh", "num_miembros_fam", "num_adultos", "pueblo_dest"]
+
 num_to_xml = [
     ["m", "f"],
     [["yes", "always"], ["no", "never"]],
     ["no", "yes", "no", "yes", "no", "no", "yes", "yes"]
 ]
+
+MODO = {
+    (1,2,3,4,5,6,7,8,9): "pt", (10): "taxi", 
+    (11, 12, 13 ,14, 15, 16, 17, 18, 19): "car",
+    (20, 21, 22): "bicicle", (24): "consorcio"
+}
+
+LUGAR = {
+    1 : "home",
+    (2, 3, 7): "work",
+    4: "education",
+    5: "shopping",
+    6: "medical",
+    (8, 9, 10, 11, 12): "leisure"
+}
+
+# Código del lugar : (coordenada_x, coordenada_y)
+VIAJES_FUERA = {
+    (5, 113, 148, 161): (428447, 4464616), # Alcalá de Henares, Pinto, Torrejon de Ardoz, Valdemoro
+    (6, 79): (437647, 4468216), # Alcobendas, Madrid
+    7 : (432447, 4465716), # Alcorcon
+    (22, 45, 80, 115, 127): (432847, 4468216), # Boadilla del Monte, Colmenar Viejo, Majadahonda, Pozuelo de Alarcon, Las Rozas
+    (58, 73): (433600, 4462216), # Fuenlabrada, Humanes
+    (65, 106): (436847, 4463016), # Getafe, Parla
+    92: (432447, 4463016) # Mostoles
+}

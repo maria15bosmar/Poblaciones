@@ -4,6 +4,7 @@ import numpy as np
 from familia import Familia
 from persona import Persona
 from scipy.special import softmax
+from planeador import planear
 
 id_pers = 0
 id_fams = 0
@@ -261,10 +262,10 @@ def familiador():
         genre_prob = PORC_GENERO[edad]
         if edad == 0:
             h, m = quasiadultos(1)
-            print(h, m)
             # Si no quedan personas de un determinado género, se fija al que haya.
             if h == 0 and m == 0:
                 edad = 1
+                genero = np.random.choice(2, p=[1-genre_prob, genre_prob])
                 if num_ciudadanos[0] < 1:
                     genero = 1
                 elif num_ciudadanos[1] < 1:
@@ -317,11 +318,11 @@ def familiador():
                 PORC_GENERO = [.303, 0.277, 0.42]
                 elecciones = ((0, 0), (1, 1), (0, 1))
                 if num_ciudadanos[0] < 1:
-                    generos = (1, 1)
+                    generos = [1, 1]
                 elif num_ciudadanos[0] > 1:
-                    generos = (0, 0)
+                    generos = [0, 0]
                 elif num_ciudadanos[0] == 1 and num_ciudadanos[1] == 1:
-                    generos = (0, 1)
+                    generos = [0, 1]
                 else:
                     generos = elecciones[np.random.choice(3, p=PORC_GENERO)]
                 if edad == 0:
@@ -478,7 +479,7 @@ def familiador():
 #print(poblacion.sum())
 #print(sum(num_ciudadanos))
 while num_ciudadanos[0] + num_ciudadanos[1] > 0:
-    #print(num_ciudadanos[0] + num_ciudadanos[1])
-    print(poblacion)
-    print(num_ciudadanos)
     familiador()
+    print(num_ciudadanos[0] + num_ciudadanos[1])
+
+planear(lista_familias)

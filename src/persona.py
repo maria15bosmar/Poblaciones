@@ -6,3 +6,6 @@ class Persona:
     
     def __str__(self) -> str:
         return f"id: {self.id}, edad: {self.edad}, género: {self.genero}"
+
+    def __eq__(self, other) -> bool:
+        return self.id == other.id
