@@ -1,6 +1,7 @@
 from utils import *
 import pandas as pd
 import numpy as np
+import json
 from familia import Familia
 from persona import Persona
 from scipy.special import softmax
@@ -18,6 +19,8 @@ for i in censo[2:]:
     num_ciudadanos.append(i)
 casas = leer_catastro(1)
 
+with open(PATH_JSON) as f:
+    probabilidades = json.load(f)
 
 def elegir_personas(edadmin, edadmax, genero):
     #print(edadmin, edadmax, genero)
@@ -247,7 +250,7 @@ def siguientes_hijos(edad1, n_ninyos):
 def familiador():
     global num_ciudadanos, id_pers, id_fams, lista_familias
     personas = []
-    PORC_FAMILIAS = [0.257, 0.302, 0.201, 0.176, 0.039, 0.015, 0.01]
+    PORC_FAMILIAS = probabilidades["familiador"]["tipo"]
     n_pers = np.random.choice(range(1,8), 1, p=PORC_FAMILIAS)[0]
     subtipo = monopar = subsubtipo = -1
     ninyos = 0
@@ -255,10 +258,10 @@ def familiador():
     # UNIDAD UNIPERSONAL
     if n_pers == 1 and num_ciudadanos[0] + num_ciudadanos[1] > 0:
         # listas de probabilidad para numpy.
-        PORC_EDAD = [0.017, 0.124, 0.149, 0.151, 0.148, 0.143, 0.149, 0.119]
-        PORC_GENERO = [0.451, 0.487, 0.536, 0.534, 0.436, 0.294, 0.203, 0.182]
+        PORC_EDAD = probabilidades["familiador"]["1"]["edad"]
+        PORC_GENERO = probabilidades["familiador"]["1"]["genero"]
         # seleccionamos edad y género.
-        edad = np.random.choice(len(PORC_EDAD), 1, p=PORC_EDAD)[0]
+        edad = np.random.choice(len(PORC_EDAD), p=PORC_EDAD)
         genre_prob = PORC_GENERO[edad]
         if edad == 0:
             h, m = quasiadultos(1)
@@ -289,11 +292,11 @@ def familiador():
     # FAMILIA DE DOS PERSONAS
     if n_pers == 2:
         # Se elige un tipo de familia.
-        PORC_TIPO_FAMILIA = [0.039, 0.181, 0.674, 0.106]
-        subtipo = np.random.choice(4, p=PORC_TIPO_FAMILIA)
+        DATOS_TIPO2 = probabilidades["familiador"]["2"]
+        subtipo = np.random.choice(4, p=DATOS_TIPO2["subtipo"])
         if (subtipo == 1 or subtipo == 0) and num_ciudadanos[subtipo] > 0 and num_ciudadanos[2] + num_ciudadanos[3] > 0: # PADRE/MADRE CON UN NIÑX
             monopar = ninyos = 1
-            PORC_EDADES = [0.02, 0.15, 0.268, 0.207, 0.355]
+            PORC_EDADES = DATOS_TIPO2["monopar"]["edad"]
             edad = np.random.choice(range(1, 6), p=PORC_EDADES)
             if edad <5:
                 padre = elegir_personas(RANGOS_EDAD[edad], RANGOS_EDAD[edad+1]-1, subtipo)
@@ -310,12 +313,12 @@ def familiador():
             pers1, pers2 = parejador(0)
             personas += [pers1, pers2]
         if subtipo == 3 and num_ciudadanos[0] + num_ciudadanos[1] > 1: # OTRO
-            PORC_SUBTIPO = [0.402, 0.082, 0.107, 0.409]
+            PORC_SUBTIPO = DATOS_TIPO2["subsubtipo"]
             subsubtipo = np.random.choice(4, p=PORC_SUBTIPO)
             if subsubtipo == 1: # HERMANOS
-                PORC_EDAD = [0.043, 0.097, 0.107, 0.165, 0.232, 0.191, 0.097, 0.068]
+                PORC_EDAD = DATOS_TIPO2["hermanos"]["edad"] # Edad del primero.
                 edad = np.random.choice(len(PORC_EDAD), p=PORC_EDAD)
-                PORC_GENERO = [.303, 0.277, 0.42]
+                PORC_GENERO = DATOS_TIPO2["hermanos"]["generos"] # Generos de ambos hermnaos.
                 elecciones = ((0, 0), (1, 1), (0, 1))
                 if num_ciudadanos[0] < 1:
                     generos = [1, 1]
@@ -349,16 +352,16 @@ def familiador():
                 # AGREGAR A FAMILIA Y CONTAR PERSONA ETC
             if subsubtipo == 8 and num_ciudadanos[0] + num_ciudadanos[1] > 1 and num_ciudadanos[2] + num_ciudadanos[3] > 0: # ABUELX Y NIÑX
                 ninyos = monopar = 1
-                PORC_GENERO = [0.617, 0.148]
+                PORC_GENERO = DATOS_TIPO2["abuelo_nieto"]["genero"]
                 generos = []
                 for i in range(2):
-                    generos.append(np.random.choice(2, 1, p=[1-PORC_GENERO[i], PORC_GENERO[i]])[0])
+                    generos.append(np.random.choice(2, p=[1-PORC_GENERO[i], PORC_GENERO[i]]))
                 # Si no quedan ciudadanos adultos de algún tipo, se usa el otro género.
                 if num_ciudadanos[0] < 1:
                     generos[1] = 1
                 elif num_ciudadanos[1] < 1:
                     generos[1] = 0
-                PORC_EDAD_NIETO = [0.032, 0.192, 0.159, 0.322, 0.186, 0.065, 0.044]
+                PORC_EDAD_NIETO = DATOS_TIPO2["abuelo_nieto"]["edad_nieto"]
                 # Si no quedan adultos, se escoge un niño y viceversa.
                 if num_ciudadanos[generos[0]] < 2 and num_ciudadanos[generos[0] + 2] < 1:
                     generos[0] = int(not generos[0])
@@ -374,18 +377,18 @@ def familiador():
                 nieto = elegir_personas(rangos[seleccion][0], rangos[seleccion][1], generos[0])
                 personas.append(Persona(id_pers, nieto, generos[0]))
                 id_pers += 1
-                PORC_EDAD_ABUELO = [0.006, 0.011, 0.049, 0.227, 0.376, 0.331]
+                PORC_EDAD_ABUELO = DATOS_TIPO2["abuelo_nieto"]["edad_abuelo"]
                 edades.append(np.random.choice(range(34, 86, 10), p=PORC_EDAD_ABUELO))
                 abuelo = elegir_personas(edades[1], edades[1]+9, generos[1])
                 personas.append(Persona(id_pers, abuelo, generos[1]))
                 id_pers += 1
     if n_pers == 3:
         # Se elige un tipo de familia.
-        PORC_TIPO_FAMILIA = [0.115, 0.022, 0.74, 0.123]
-        subtipo = np.random.choice(4, 1, p=PORC_TIPO_FAMILIA)[0]
+        DATOS_TIPO3 = probabilidades["familiador"]["3"]
+        subtipo = np.random.choice(4, p=DATOS_TIPO3["subtipo"])
         if (subtipo == 1 or subtipo == 0) and num_ciudadanos[subtipo] > 0 and num_ciudadanos[2] + num_ciudadanos[3] > 1: # PADRE/MADRE CON DOS NIÑX
             ninyos, monopar = 1, 1
-            PORC_EDADES = [0.02, 0.15, 0.268, 0.207, 0.355]
+            PORC_EDADES = DATOS_TIPO3["monopar"]["edad"]
             edad = np.random.choice(range(1,6), 1, p=PORC_EDADES)[0]
             if edad <5:
                 padre = elegir_personas(RANGOS_EDAD[edad], RANGOS_EDAD[edad+1]-1, subtipo)
@@ -407,19 +410,19 @@ def familiador():
             edad_hijo = elegir_personas( 0, 24, sexo_hijo)
             personas.append(Persona(id_pers, edad_hijo, sexo_hijo))
             id_pers += 1
-            PORC_EDAD_MADRE = [0.018, 0.075, 0.174, 0.326, 0.303, 0.095, 0.009]
+            PORC_EDAD_MADRE = DATOS_TIPO3["pareja"]["edad_madre"]
             seleccion = np.random.choice(range(15, 46, 5), 1, p=PORC_EDAD_MADRE)[0]
             edad_madre = np.random.randint(seleccion, seleccion+5)
             personas.extend(parejador( edad_madre+edad_hijo))
     
     if n_pers == 4:
         # Se elige un tipo de familia.
-        PORC_TIPO_FAMILIA = [0.029, 0.003, 0.846, 0.122]
-        subtipo = np.random.choice(4, 1, p=PORC_TIPO_FAMILIA)[0]
+        DATOS_TIPO4 = probabilidades["familiador"]["3"]
+        subtipo = np.random.choice(4, p=DATOS_TIPO4["subtipo"])
         # PADRE/MADRE CON DOS NIÑXS
         if (subtipo == 1 or subtipo == 0) and num_ciudadanos[subtipo] > 0 and num_ciudadanos[2] + num_ciudadanos[3] > 2:
             ninyos, monopar = 1, 1
-            PORC_EDADES = [0.02, 0.15, 0.268, 0.207, 0.355]
+            PORC_EDADES = DATOS_TIPO4["monopar"]["edad"]
             edad = np.random.choice(range(1,6), 1, p=PORC_EDADES)[0]
             if edad <5:
                 padre = elegir_personas(RANGOS_EDAD[edad], RANGOS_EDAD[edad+1]-1, subtipo)
@@ -438,7 +441,7 @@ def familiador():
             edad_hijo = elegir_personas(0, 24, sexo_hijo)
             personas.append(Persona(id_pers, edad_hijo, sexo_hijo))
             id_pers += 1
-            PORC_EDAD_MADRE = [0.018, 0.075, 0.174, 0.326, 0.303, 0.095, 0.009]
+            PORC_EDAD_MADRE = DATOS_TIPO4["pareja"]["edad_madre"]
             seleccion = np.random.choice(range(15, 46, 5), 1, p=PORC_EDAD_MADRE)[0]
             edad_madre = np.random.randint(seleccion, seleccion+5)
             personas.extend(parejador(edad_madre+edad_hijo))
@@ -446,7 +449,8 @@ def familiador():
             # AGREGAR A FAMILIA Y CONTAR PERSONA ETC
 
     if n_pers == 5:
-        prob = 0.658
+        DATOS_TIPO5 = probabilidades["familiador"]["5"]
+        prob = DATOS_TIPO5["subtipo"]
         subtipo = np.random.choice(2, p=[prob, 1-prob])
         # Pareja con tres hijos.
         if subtipo == 0 and num_ciudadanos[0] + num_ciudadanos[1] > 1 and num_ciudadanos[2] + num_ciudadanos[3] > 2:
@@ -455,7 +459,7 @@ def familiador():
             edad_hijo = elegir_personas(0, 24, sexo_hijo)
             personas.append(Persona(id_pers, edad_hijo, sexo_hijo))
             id_pers += 1
-            PORC_EDAD_MADRE = [0.018, 0.075, 0.174, 0.326, 0.303, 0.095, 0.009]
+            PORC_EDAD_MADRE = DATOS_TIPO5["edad"]
             seleccion = np.random.choice(range(15, 46, 5), 1, p=PORC_EDAD_MADRE)[0]
             edad_madre = np.random.randint(seleccion, seleccion+5)
             personas.extend(parejador(edad_madre+edad_hijo))
@@ -466,6 +470,7 @@ def familiador():
     if len(personas) == 0:
         return -1
     # Se crea la familia.
+    PROB_TRABAJO = probabilidades["familiador"]["trabajo"]
     if subtipo == -1:
         p = (PROB_TRABAJO[n_pers-1], 1-PROB_TRABAJO[n_pers-1])
     elif subsubtipo == -1:

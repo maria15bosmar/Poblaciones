@@ -2,10 +2,11 @@ import pandas as pd
 
 MAYORIA_EDAD = 25
 # PATHS
-PATH_DATOS = "antiguo/"
+PATH_DATOS = "resources/input_data/"
 PATH_CENSO = PATH_DATOS + "Censos/"
 PATH_CONSORCIO = PATH_DATOS + "Consorcio/"
 PATH_CATASTRO = PATH_DATOS + "Catastro/"
+PATH_JSON = PATH_DATOS + "probabilities.json"
 
 TAM_CASAS = (60, 100)
 MAX_X = 438447
@@ -34,8 +35,6 @@ DIFERENCIAS_EDAD = [
 ]
 
 CANTIDAD_DIFERENCIA = [(0, 1), (-1), (2, 3), (-2, -3), (4, 5)]
-PROB_TRABAJO = (0.255, (0.269, 0.259, 0.22, (0.403, 0.825)), (0.183, 0.045, 0.042), 
-    (0.208, 0.01, 0.019), (0.027, 0))
 
 def leer_catastro(distrito):
     df = pd.read_csv(PATH_CATASTRO + "casasd" + str(distrito)+ ".csv")
