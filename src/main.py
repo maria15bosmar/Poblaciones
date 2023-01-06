@@ -463,6 +463,8 @@ def familiador():
             # AGREGAR A FAMILIA Y CONTAR PERSONA ETC
     else:
         return
+    if len(personas) == 0:
+        return -1
     # Se crea la familia.
     if subtipo == -1:
         p = (PROB_TRABAJO[n_pers-1], 1-PROB_TRABAJO[n_pers-1])

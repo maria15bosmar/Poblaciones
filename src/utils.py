@@ -54,12 +54,13 @@ def leer_censo(distrito):
     ninyas = df.iloc[:25,1].to_numpy().sum()
     return df.iloc[:,0], df.iloc[:,1], hombres, mujeres, ninyos, ninyas
 
-def buscar_clave(hash_table: dict, clave: int):
+def buscar_clave(hash_table: dict, clave: any):
     """ Devuelve el valor corresponiente a una clave en un diccionario
         de claves compuestas. """
     for i in hash_table.keys():
         if (type(i) == tuple and clave in i) or (clave == i):
             return hash_table[i]
+    return -1
 
 # PLANEADOR
 all_cols = ["id_hog","id_per", "id_via", "sexo", "trabajo", "carnet", 
@@ -73,9 +74,9 @@ num_to_xml = [
 ]
 
 MODO = {
-    (1,2,3,4,5,6,7,8,9): "pt", (10): "taxi", 
-    (11, 12, 13 ,14, 15, 16, 17, 18, 19): "car",
-    (20, 21, 22): "bicicle", (24): "consorcio"
+    (1, 2, 3, 4, 5, 6, 7, 8, 9): "pt", (10): "taxi", 
+    (11, 12, 13 ,14, 15, 16, 17, 18, 19, 23): "car",
+    (20, 21, 22): "bicicle", (24): "walk"
 }
 
 LUGAR = {

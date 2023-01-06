@@ -4,6 +4,7 @@ import pandas as pd
 from utils import *
 from persona import Persona
 from facilities import raster
+from xml.dom import minidom
 import copy
 import math
 
@@ -11,8 +12,10 @@ def planear(lista_familias: list):
     mapa = raster()
     familias = familias_reales()
     copia_fams = copy.deepcopy(familias)
-    fichero_salida = open('population.xml', 'w')
-    fichero_salida.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">\n\n')
+    with open('population.xml','w') as f:
+        f.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">\n\n')
+        """fichero_salida = open('population.xml', 'wb')
+        fichero_salida.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">\n\n')"""
     ET_padre = ET.Element("population")
     for i, familia in enumerate(lista_familias):
         tipo = familia.tipofamilia
@@ -23,8 +26,10 @@ def planear(lista_familias: list):
             familias[tipo - 1] = copy.deepcopy(copia_fams[tipo - 1])
         else:
             familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
-    fichero_salida.write(ET.tostring(ET_padre))
-    fichero_salida.close()  # Cerramos el fichero de popablación
+    with open('population.xml','a') as f:
+        f.write(minidom.parseString(ET.tostring(ET_padre)).toprettyxml(indent="\t"))
+    """fichero_salida.write(ET.tostring(ET_padre))
+    fichero_salida.close()  # Cerramos el fichero de popablación"""
 
 
 def familias_reales():
@@ -177,6 +182,8 @@ def coordenadas(x_anterior, y_anterior, distancia, destinostr, pueblo_dest, pueb
             dist_en_y = y_nueva - y_anterior
             listapuntos.append([x_nueva, y_nueva - 2 * dist_en_y])  # Simetria del punto respecto al eje de abcisas
         x_nueva, y_nueva = pesoscuadrante(listapuntos, destinostr, mapa)
+        if x_nueva is None or y_nueva is None:
+            pass
     return x_nueva, y_nueva
 
 def ordenar(fam_consorcio, fam_sintetica, num_hijos_sinte):
@@ -184,7 +191,7 @@ def ordenar(fam_consorcio, fam_sintetica, num_hijos_sinte):
     num_per_consorcio = int(fam_consorcio[0][0][0][14])
     num_hijos_consorcio = int(fam_consorcio[0][0][0][14]) - int(fam_consorcio[0][0][0][15])
     diferencia_hijos = num_hijos_consorcio - num_hijos_sinte
-    for i in range(num_hijos_consorcio):
+    for i in range(num_per_consorcio):
         # Diferencia hijos si hay problemas.
         if int(fam_consorcio[0][i][0][12]) <= 24:
             if diferencia_hijos > 0:
@@ -301,7 +308,7 @@ def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
                 num_adultos_consorcio = int(fam_consorcio[0][0][0][15])
                 num_hijos_consorcio = int(fam_consorcio[0][0][0][14]) - num_adultos_consorcio
                 # Si coinciden el numero de adulto y como mucho hay un niño sinte mas se asignan los planes.
-                if num_adultos_sinte == num_adultos_consorcio and num_hijos_sinte - num_hijos_consorcio <= 1:
+                if num_adultos_sinte == num_adultos_consorcio and abs(num_hijos_sinte - num_hijos_consorcio) <= 1:
                     match = True
                     if tipologia >= 5:  # tipologias 5 6 7 y 8 que tienen niños
                         fam_sintetica.sort_personas()
@@ -312,16 +319,12 @@ def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
                         return -1   # No quedan familias que se ajusten al tipo que ha salido
         else:
             return -2   # La familia sintetica no es apta
-        print(fam_consorcio[0][0][0][14])
-        print(len(fam_sintetica.personas))
-        print(len(fam_consorcio[0]))
         ordenar(fam_consorcio, fam_sintetica, num_hijos_sinte)
-        print(len(fam_consorcio[0]))
     for persona in fam_sintetica.personas:
         # Caso de que la persona del consorcio no tenga planes
         if int(fam_consorcio[0][0][0][2]) == -1:
             fam_consorcio[0].pop(0)  # Se borra a la persona que no tenia planes
-            # Si no quedan mas personas en la familia se borra la familia
+            # Si no quedan más personas en la familia se borra la familia
             if len(fam_consorcio[0]) == 0:
                 fam_consorcio.pop(0)
         else:
@@ -331,9 +334,9 @@ def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
             trabajostr = num_to_xml[2][tipologia-1]
             # Construir el árbol XML.
             persona_ET = ET.SubElement(padre_ET, 'person')
-            persona_ET.set("id", persona.id)
+            persona_ET.set("id", str(persona.id))
             persona_ET.set("sex", generostr)
-            persona_ET.set("age", persona.edad)
+            persona_ET.set("age", str(persona.edad))
             persona_ET.set("license", carnetstr[0])
             persona_ET.set("car_avail", carnetstr[1])
             persona_ET.set("employed", trabajostr)
@@ -359,11 +362,11 @@ def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
                     y_anterior = fam_sintetica.casa[1]
                     act_ET = ET.SubElement(plan_ET, "act")
                     act_ET.set("type", origenstr)
-                    act_ET.set("x", x_anterior)
-                    act_ET.set("y", y_anterior)
+                    act_ET.set("x", str(x_anterior))
+                    act_ET.set("y", str(y_anterior))
                     act_ET.set("start_time", "00:00")
-                    act_ET.set("dur", hora_ini)
-                    act_ET.set("end_time", hora_ini)
+                    act_ET.set("dur", str(hora_ini))
+                    act_ET.set("end_time", str(hora_ini))
                 if destinostr == "home":
                     x_nueva = fam_sintetica.casa[0]
                     y_nueva = fam_sintetica.casa[1]
@@ -375,24 +378,24 @@ def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
                 # Nuevo desplazamiento.
                 leg_ET = ET.SubElement(plan_ET, "leg")
                 leg_ET.set("mode", modestr)
-                leg_ET.set("dep_time", hora_ini)
-                leg_ET.set("trav_time", duracion)
-                leg_ET.set("arr_time", hora_fin)
+                leg_ET.set("dep_time", str(hora_ini))
+                leg_ET.set("trav_time", str(duracion))
+                leg_ET.set("arr_time", str(hora_fin))
                 # Nueva actividad.
                 act_ET = ET.SubElement(plan_ET, "act")
                 act_ET.set("type", destinostr)
-                act_ET.set("x", x_nueva)
-                act_ET.set("y", y_nueva)
-                act_ET.set("start_time", hora_ini)
+                act_ET.set("x", str(x_nueva))
+                act_ET.set("y", str(y_nueva))
+                act_ET.set("start_time", str(hora_ini))
                 # En caso de que solo le queda un plan por hacer a la persona
                 if len(fam_consorcio[0][0]) == 1:  
                     hora_ini_aux = hora_ini.replace(":", "")
                     duracionfinal = trav_time(hora_ini_aux, 2400)
-                    act_ET.set("dur", duracionfinal)
+                    act_ET.set("dur", str(duracionfinal))
                     act_ET.set("end_time", "24:00")
                 else: # Si quedan más.
-                    act_ET.set("dur", duracion)
-                    act_ET.set("end_time", hora_fin)
+                    act_ET.set("dur", str(duracion))
+                    act_ET.set("end_time", str(hora_fin))
                 x_anterior = x_nueva
                 y_anterior = y_nueva
                 fam_consorcio[0][0].pop(0) # Se elimina el plan ya asignado
