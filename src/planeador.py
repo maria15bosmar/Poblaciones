@@ -12,7 +12,7 @@ def planear(lista_familias: list):
     mapa = raster()
     familias = familias_reales()
     copia_fams = copy.deepcopy(familias)
-    with open('population.xml','w') as f:
+    with open('resources/population.xml','w') as f:
         f.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">\n\n')
     ET_padre = ET.Element("population")
     for i, familia in enumerate(lista_familias):
@@ -24,7 +24,7 @@ def planear(lista_familias: list):
             familias[tipo - 1] = copy.deepcopy(copia_fams[tipo - 1])
         else:
             familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
-    with open('population.xml','a') as f:
+    with open('resources/population.xml','a') as f:
         f.write(minidom.parseString(ET.tostring(ET_padre)).toprettyxml(indent="\t"))
 
 def familias_reales():
@@ -129,7 +129,7 @@ def pesoscuadrante(listapuntos, destinostr, mapa): # Toma todos los puntos del c
 def coordenadas(x_anterior, y_anterior, distancia, destinostr, pueblo_dest, pueblo_orig, mapa):
     x_nueva, y_nueva = 1, 1
     if pueblo_dest != 74:  # Si la persona se desplaza fuera del municipio se dan las cordenadas de la carretera por donde sale del mapa
-        x_nueva, y_nueva = buscar_clave(VIAJES_FUERA, pueblo_dest)
+        x_nueva, y_nueva = buscar_clave(INPUT_DATA["viajes_fuera"], pueblo_dest)
     else:                                       # En caso de quedarse en el municipio se ven los lugares posibles a los que ir
         grados_girados = 0
         listapuntos = []
@@ -348,9 +348,9 @@ def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
                 duracion = trav_time(hora_ini, hora_fin)
                 hora_ini = str(hora_ini)[:2] + ":" + str(hora_ini)[2:]
                 hora_fin = str(hora_fin)[:2] + ":" + str(hora_fin)[2:]
-                modestr = buscar_clave(MODO, fam_consorcio[0][0][0][10])
-                origenstr = buscar_clave(LUGAR, int(fam_consorcio[0][0][0][8]))
-                destinostr = buscar_clave(LUGAR, int(fam_consorcio[0][0][0][9]))
+                modestr = buscar_clave(INPUT_DATA["modo"], fam_consorcio[0][0][0][10])
+                origenstr = buscar_clave(INPUT_DATA["lugar"], int(fam_consorcio[0][0][0][8]))
+                destinostr = buscar_clave(INPUT_DATA["lugar"], int(fam_consorcio[0][0][0][9]))
                 id_viaje = fam_consorcio[0][0][0][2] - 1
                 if id_viaje == 0:   # En caso de que sea el primer viaje se pone la estancia en casa hasta la hora de salir
                     x_anterior = fam_sintetica.casa[0]
