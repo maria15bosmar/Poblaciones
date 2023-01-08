@@ -103,23 +103,23 @@ def quasiadultos (cantidad):
     return boolean
 
 def probabilidad_disminuida(min, max):
-    return round(np.random.beta(2,5)*(max-min)+min)
+    return round(np.random.beta(2, 5) * (max - min) + min)
 
 def parejador(hay_ninyos):
     global poblacion
     global id_pers
     EDADES = [18, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90]
-    PORC_EDAD = [0.011, 0.037, 0.083, 0.129, 0.129, 0.128, 0.113, 0.095, 0.077, 0.068, 0.053, 0.043, 0.022, 0.01, 0.002]
+    PORC_EDAD = probabilidades["parejador"]["edad"]
     # Elegir la edad de la primera persona (normalmente la mujer en parejas heterosexuales).
     # Se hace en función de la edad del hijo.
     for ind, ninyos in enumerate(range(25, 75, 5)):
         if hay_ninyos >= ninyos and hay_ninyos <= ninyos+4:
             age_range1 = ind+1
-    if hay_ninyos <= 24 and hay_ninyos >0:
+    if hay_ninyos <= 24 and hay_ninyos > 0:
         age_range1 = 0
     # Si no hay niños el range de edad es aleatorio.
     if hay_ninyos == 0:
-        age_range1 = np.random.choice(len(PORC_EDAD), 1, p=PORC_EDAD)[0]
+        age_range1 = np.random.choice(len(PORC_EDAD), p=PORC_EDAD)
     # Se elige la edad de la primera persona aleatoriamente según su rango de edad.
     # Tener en cuenta la diferencia de edad madre/hijo para madres jóvenes.
     if age_range1 == 0:
@@ -137,17 +137,17 @@ def parejador(hay_ninyos):
         aux = EDADES[age_range1]
         age1 = np.random.randint(aux, aux+5)
     # Se elige si es homogamia, hipogamia (alta/baja) o hipergamia (alta/baja) según unas probabilidades.
-    tipo_pareja = np.random.choice(5, 1, p=DIFERENCIAS_EDAD[age_range1])[0]
+    tipo_pareja = np.random.choice(5, p=DIFERENCIAS_EDAD[age_range1])
     # La diferencia de edad es fija si no es muy elevada.
-    posible_dif = CANTIDAD_DIFERENCIA[tipo_pareja]
+    posible_dif = probabilidades["parejador"]["diferencia_edad"][tipo_pareja]
     if type(posible_dif) is int:
         diferencia = posible_dif
     else:
         if tipo_pareja <= 3:
-            diferencia = np.random.choice(posible_dif, 1)[0]
+            diferencia = np.random.choice(posible_dif)
         # Si la diferencia es elevada se calcula con una probabilidad disminuída.
         else:
-            diferencia_base = np.random.choice(posible_dif, 1)[0]
+            diferencia_base = np.random.choice(posible_dif)
             diferencia = probabilidad_disminuida(diferencia_base, diferencia_base+5)
             if tipo_pareja == 5:
                 diferencia*=-1
@@ -162,10 +162,9 @@ def parejador(hay_ninyos):
             if gens[i] < 2 and ages[i] <= 24:
                 ages[i] = 25
     # Se elige tipo de pareja.
-    # --- Si solo hay hombres, gay. Si solo hay mujeres, lesbianas. Si hay uno de cada, heteros.
-    PROC_TIPO_PAREJA = [0.009, 0.004, 0.987]
+    # Si solo hay hombres, gay. Si solo hay mujeres, lesbianas. Si hay uno de cada, heteros.
     elecciones = ((0, 0), (1, 1), (1, 0))
-    tipo = elecciones[np.random.choice(3, 1, p=PROC_TIPO_PAREJA)[0]]
+    tipo = elecciones[np.random.choice(3, p=probabilidades["parejador"]["tipo_pareja"])]
     if num_ciudadanos[0] < 1:
         tipo = (1, 1)
     elif num_ciudadanos[1] < 1:
@@ -174,7 +173,6 @@ def parejador(hay_ninyos):
         tipo = (1, 0)
     age1 = elegir_personas(age1, -2, tipo[0])
     age2 = elegir_personas(age2, -2, tipo[1])
-    # ---- AGREGAR A PERSONAS
     per1 = Persona(id_pers, age1, tipo[0])
     per2 = Persona(id_pers+1, age2, tipo[1])
     id_pers += 2
@@ -206,8 +204,9 @@ def simplificador(generos, edadmin, edadmax):
     # Encontrar una edad factible para el primer hermano.
     edades.append(elegir_personas(edadmin, edadmax, generos[0]))
     # Calcular la diferencia de edad según una probabilidad.
-    elecciones = [(1, 2), (4, 5), (7, 10), (12, 20)]
-    asumar = np.random.choice(len(elecciones), 1, p=[0.26, 0.349, 0.272, 0.119])[0]
+    elecciones = probabilidades["simplificador"]["diferencia_edad"]
+    asumar = np.random.choice(len(elecciones), p=probabilidades["simplificador"]["probabilidad_diferencia"])
+    asumar = np.random.randint(elecciones[asumar][0], elecciones[asumar][1] + 1)
     # Aleatoriamente se elige si el hermano 1 es el mayor o el menor (multiplicar asumar por -1).
     if np.random.randint(2):
         asumar*=-1
@@ -232,14 +231,14 @@ def siguientes_hijos(edad1, n_ninyos):
         genero_demas = sexador_hijos(n_ninyos)
     edades, hijos = [edad1], []
     PROP_DIFERENCIA = [0.015, 0.175, 0.172, 0.588, 0.05]
-    elecciones = (0, 1, 2, (3,9), (10, 20))
-    diferencias = np.random.choice(len(elecciones), n_ninyos, p=PROP_DIFERENCIA)
+    elecciones = probabilidades["siguientes_hijos"]["diferencia_edad"]
+    diferencias = np.random.choice(len(elecciones), n_ninyos, p=probabilidades["siguientes_hijos"]["probabilidad_diferencia"])
     for i in range(n_ninyos):
         if diferencias[i] < 3:
-            edades.append(edades[-1]+elecciones[diferencias[i]])
+            edades.append(edades[-1] + elecciones[diferencias[i]])
         else:
-            edades.append(edades[-1]+probabilidad_disminuida(elecciones[diferencias[i]][0], elecciones[diferencias[i]][1]))
-        if edades[-1]+4 > 24 and num_ciudadanos[genero_demas[i]] == 0:
+            edades.append(edades[-1] + probabilidad_disminuida(elecciones[diferencias[i]][0], elecciones[diferencias[i]][1]))
+        if edades[-1] + 4 > 24 and num_ciudadanos[genero_demas[i]] == 0:
             nuevo_hijo = elegir_personas(20, -1, genero_demas[i])
         else:
             nuevo_hijo = elegir_personas(edades[i], -1, genero_demas[i])
@@ -250,8 +249,7 @@ def siguientes_hijos(edad1, n_ninyos):
 def familiador():
     global num_ciudadanos, id_pers, id_fams, lista_familias
     personas = []
-    PORC_FAMILIAS = probabilidades["familiador"]["tipo"]
-    n_pers = np.random.choice(range(1,8), 1, p=PORC_FAMILIAS)[0]
+    n_pers = np.random.choice(range(1, 8), p=probabilidades["familiador"]["tipo"])
     subtipo = monopar = subsubtipo = -1
     ninyos = 0
 

@@ -14,8 +14,6 @@ def planear(lista_familias: list):
     copia_fams = copy.deepcopy(familias)
     with open('population.xml','w') as f:
         f.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">\n\n')
-        """fichero_salida = open('population.xml', 'wb')
-        fichero_salida.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">\n\n')"""
     ET_padre = ET.Element("population")
     for i, familia in enumerate(lista_familias):
         tipo = familia.tipofamilia
@@ -28,9 +26,6 @@ def planear(lista_familias: list):
             familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
     with open('population.xml','a') as f:
         f.write(minidom.parseString(ET.tostring(ET_padre)).toprettyxml(indent="\t"))
-    """fichero_salida.write(ET.tostring(ET_padre))
-    fichero_salida.close()  # Cerramos el fichero de popablación"""
-
 
 def familias_reales():
     """ Devuelve un array de 8 columnas con los 8 tipos de familias reales. """
