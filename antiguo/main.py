@@ -808,7 +808,6 @@ def tipodefamilia(tamfamilia, empleo, niños, monopar):
     return tipo
 
 def familiador(hombres, mujeres):
-    # PASO 1
     tamfamilia = numaleatorio()
     global id_personas
     global id_familias
@@ -818,10 +817,8 @@ def familiador(hombres, mujeres):
     global totalmujeresadultas
     global totalhombresadultos
     personas = []
-    # PASO 2
     if tamfamilia >= 0 and tamfamilia < 25.7 and totalmujeresadultas + totalhombresadultos > 0: # Familia unipersonal
         sexo = 0
-        # PASO 3
         edad = numaleatorio()
         genero = numaleatorio()
         if totalmujeresadultas == 0: #Para el caso de que no queden mas mujeres escogemos un hombre
@@ -1558,4 +1555,6 @@ for i in range(7):
         familiador (listaHombres, listaMujeres)
         print("QUEDAN " + str(totalmujeresadultas) + " mujeres, " + str(totalhombresadultos) + " hombres, " + str(totalniñas) + " niñas y " + str(totalniños) + " niños por colocar")
     print(lista_familias[0].casa)
+p = len(lista_familias)
 planear(lista_familias)
+print(p)

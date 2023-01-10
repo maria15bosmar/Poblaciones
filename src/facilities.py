@@ -26,7 +26,6 @@ def usosinmuebles(mapa, x_inicial, y_inicial):  # Lee el fichero de inmuebles y 
     df = df.join(pd.DataFrame({"celda": df["x"].values + df["y"].values * 15}))
     df = df.dropna()
     df["celda"] = df["celda"].astype(int)
-    df.to_csv("idk.csv")
     for t in df["tipo"].unique():
         df2 = df.loc[df["tipo"] == t]
         for c in df2["celda"].unique():

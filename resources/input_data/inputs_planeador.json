@@ -1,5 +1,6 @@
 {
     "tam_casas" : [60, 100],
+    "num_distritos" : 7,
     "max_x" : 438447,
     "max_y" : 4462216,
     "min_x" : 432447,

@@ -20,12 +20,18 @@ class Familia:
     """ Returns some coordinates of a house. """
     coordenadas = []
     num_per = len(personas)
-    selected = np.random.choice(range(3), 1, p=TIPOS_CASA[num_per])[0]
-    lista = tipos_casas[selected]
+    selected = np.random.choice(range(3), p=TIPOS_CASA[num_per])
+    if len(tipos_casas[selected]) > 0:
+      lista = tipos_casas[selected]
+    else:
+      for i in range(3):
+        if len(tipos_casas[i]) > 0:
+          lista = tipos_casas[i]
+          break
     coordenadas = lista.pop(0)
     if len(coordenadas) == 0:
       for i in tipos_casas:
-        if len(i)>0:
+        if len(i) > 0:
           coordenadas = i.pop()
 
     return coordenadas

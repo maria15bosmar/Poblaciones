@@ -19,11 +19,11 @@ def planear(lista_familias: list):
         tipo = familia.tipofamilia
         vacio = traspaso(familias[tipo-1], familia, ET_padre, mapa, tipo)
         print("Se han completado " + str(i) + " familias")
-    if vacio == -1 or vacio == -3:
-        if len(familias[tipo - 1]) >= len(copia_fams[tipo - 1]) / 2:
-            familias[tipo - 1] = copy.deepcopy(copia_fams[tipo - 1])
-        else:
-            familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
+        if vacio == -1 or vacio == -3:
+            if len(familias[tipo - 1]) >= len(copia_fams[tipo - 1]) / 2:
+                familias[tipo - 1] = copy.deepcopy(copia_fams[tipo - 1])
+            else:
+                familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
     with open('resources/population.xml','a') as f:
         f.write(minidom.parseString(ET.tostring(ET_padre)).toprettyxml(indent="\t"))
 

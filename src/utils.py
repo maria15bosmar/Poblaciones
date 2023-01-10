@@ -46,8 +46,8 @@ def buscar_clave(hash_table: dict, clave: any):
     return -1
 
 # PLANEADOR
-all_cols = ["id_hog","id_per", "id_via", "sexo", "trabajo", "carnet", 
-                    "hora_ini", "hora_fin", "mot_origen", "mot_destino", "vehiculo", "edad", 
+all_cols = ["id_hog","id_per", "id_via", "sexo", "trabajo", "carnet", "hora_ini", 
+                    "hora_fin", "mot_origen", "mot_destino", "vehiculo", "edad", 
                     "num_veh", "num_miembros_fam", "num_adultos", "pueblo_dest"]
 
 num_to_xml = [
