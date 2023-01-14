@@ -1,36 +1,38 @@
-from utils import *
-import pandas as pd
-import numpy as np
+""" Función main. Contiene las funciones pertenecientes al familiador. """
+
 import json, copy
+import numpy as np
+from scipy.special import softmax
 from familia import Familia
 from persona import Persona
-from scipy.special import softmax
+from utils import *
 from planeador import planear
 
 id_pers = 0
 id_fams = 0
 lista_familias = []
 
-
-
 with open(PATH_JSON_FAMILIADOR) as f:
     INPUTS_FAMILIADOR = json.load(f)
 
 def elegir_personas(edadmin, edadmax, genero):
-    #print(edadmin, edadmax, genero)
     """ Devuelve una edad factible para una persona. """
     global num_ciudadanos, poblacion
+    # Excepciones a tratar.
     if edadmin == 85:
         edadmax = 95
+    # Edad concreta y si no superior (segundo hijo).
     if edadmax == -1:
         edadmax = edadmin + 4
         edad = edadmin
-    elif edadmax == -3:  # En caso de edadmax = -1 significa que queremos una edad concreta y si no superior (segundo hijo) y -3 para adulto
+    # Mismo caso que -1 pero para adultos.
+    elif edadmax == -3:
         edadmax = edadmin + 4
         edad = edadmin
         if edadmax > 95:
             edadmax = 95
-    elif edadmax == -2: # Persona con una edad predefinida
+    # Persona con una edad predefinida
+    elif edadmax == -2:
         if edadmin >= 27 and edadmin <= 93:
             edad = edadmin
             edadmin = edad - 2
@@ -46,7 +48,8 @@ def elegir_personas(edadmin, edadmax, genero):
             edad = edadmin
             edadmin = edad - 4
             edadmax = 95
-    else:   # Si no, se hace aleatoriamente
+    # Si no, se hace aleatoriamente
+    else:
         edad = np.random.randint(edadmin, edadmax+1)
     # Lista de posibles edades que se van a probar en orden.
     rango = list(range(edad, edadmax+1))
@@ -59,12 +62,13 @@ def elegir_personas(edadmin, edadmax, genero):
                 num_ciudadanos[2 + genero] -= 1
             else: # Si es un adulto.
                 num_ciudadanos[genero] -= 1
-            return i        
+            return i
     # No se encuentra a una persona.
-    if edadmax < 24:   # No quedan hijos en ese rango probar con hijos mayores de hasta 24 años
+    if edadmax < 24:   # No quedan hijos en ese rango. Probar con hijos mayores de hasta 24 años.
         return elegir_personas(edadmax, 24, genero)
-    elif edadmax == 24:  # Probamos para cualquier edad de niño
-            return elegir_personas(0, 24, genero)
+    elif edadmax == 24:  # Probamos para cualquier edad de niño.
+        return elegir_personas(0, 24, genero)
+    # No se encuentran adultos. Hay que probar todos los rangos de edad hasta hallar alguno.
     elif edadmax >= 25:
         if edadmax > 90:
             return elegir_personas(25, 34, genero)
@@ -75,25 +79,29 @@ def sexador_hijos(numero):
     """ Se da un género a un número de hijos dado. """
     global num_ciudadanos
     generos = []
+    # Se copia el número de niños y de niñas.
     num_nin = num_ciudadanos[2:].copy()
     for i in range(numero):
-        # Se comprueba que queden personas de ese género.
+        # Se comprueba que queden personas de un género elegido aleatoriamente.
         while True:
             nuevo = np.random.randint(2)
+            # Si se encuentran se resta una persona a la copia.
             if num_nin[nuevo] > 0:
                 num_nin[nuevo]-=1
                 generos.append(nuevo)
                 break
+    # Se devuelve el género o la lista de géneros.
     if numero == 1:
         return generos[0]
     return generos
 
 def quasiadultos (cantidad):
+    """ Comprueba que existan jóvenes de entre 18 y 24 años. """
     global poblacion
     boolean = [0, 0]
     i = 18
-    # Arriba se comprobó si hay adultos pero no si hay personas de 18 a 24 aquí se hace la comprobación.
-    while i <= 24 and (boolean[0] < cantidad or boolean[1] < cantidad): 
+    # Se devuelve el número de hombres jóvenes y mujeres jóvenes que quedan.
+    while i <= 24 and (boolean[0] < cantidad or boolean[1] < cantidad):
         for gen in range(2):
             if poblacion[gen][i] >= 1:
                 boolean[gen] += poblacion[gen][i]
@@ -101,13 +109,14 @@ def quasiadultos (cantidad):
     return boolean
 
 def probabilidad_disminuida(min, max):
+    """ Devuelve un número en un rango, mayor probabilidad de que salga más bajo. """
     return round(np.random.beta(2, 5) * (max - min) + min)
 
 def parejador(hay_ninyos):
-    global poblacion
-    global id_pers
+    """ Devuelve una pareja facible. """
+    global poblacion, id_pers
     EDADES = [18, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90]
-    PORC_EDAD = INPUTS_FAMILIADOR["parejador"]["edad"]
+    PORC_EDAD = INPUTS_FAMILIADOR["parejador"]["edad_porcentajes"]
     # Elegir la edad de la primera persona (normalmente la mujer en parejas heterosexuales).
     # Se hace en función de la edad del hijo.
     for ind, ninyos in enumerate(range(25, 75, 5)):
@@ -118,22 +127,24 @@ def parejador(hay_ninyos):
     # Si no hay niños el range de edad es aleatorio.
     if hay_ninyos == 0:
         age_range1 = np.random.choice(len(PORC_EDAD), p=PORC_EDAD)
-    # Se elige la edad de la primera persona aleatoriamente según su rango de edad.
+    # Se elige la edad de la primera persona.
     # Tener en cuenta la diferencia de edad madre/hijo para madres jóvenes.
     if age_range1 == 0:
-        if hay_ninyos!=0:
+        if hay_ninyos != 0:
             if hay_ninyos < 18:
                 age1 = 18
             else:
                 age1 = hay_ninyos
+        # Si no quedan posibles madres jóvenes se pasa a adultas.
         if quasiadultos(2)[1] == 0:
-            age1=25
+            age1 = 25
         else:
-            aux = EDADES[age_range1+1]
-            age1 = np.random.randint(aux, aux+5)
+            aux = EDADES[age_range1 + 1]
+            age1 = np.random.randint(aux, aux + 5)
+    # Si no hay problemas se elige aleatoriamente la primera edad.
     else:
         aux = EDADES[age_range1]
-        age1 = np.random.randint(aux, aux+5)
+        age1 = np.random.randint(aux, aux + 5)
     # Se elige si es homogamia, hipogamia (alta/baja) o hipergamia (alta/baja) según unas probabilidades.
     tipo_pareja = np.random.choice(5, p=INPUTS_FAMILIADOR["parejador"]["probabilidad_diferencia"][age_range1])
     # La diferencia de edad es fija si no es muy elevada.
@@ -149,6 +160,7 @@ def parejador(hay_ninyos):
             diferencia = probabilidad_disminuida(diferencia_base, diferencia_base+5)
             if tipo_pareja == 5:
                 diferencia*=-1
+    # Se obtiene la segunda edad dada la diferencia.
     age2 = age1 + diferencia
     if age2 > 95:
         age2 = 95
@@ -169,6 +181,7 @@ def parejador(hay_ninyos):
         tipo = (0, 0)
     elif num_ciudadanos[0] == 1 and num_ciudadanos[1] == 1:
         tipo = (1, 0)
+    # Obtener las personas y devolverlas.
     age1 = elegir_personas(age1, -2, tipo[0])
     age2 = elegir_personas(age2, -2, tipo[1])
     per1 = Persona(id_pers, age1, tipo[0])
@@ -177,21 +190,30 @@ def parejador(hay_ninyos):
     return per1, per2
 
 def tipodefamilia(tamfamilia, empleo, niños, monopar):
-    if tamfamilia == 1 and empleo == 0 and niños == 0:                      #Unipersonal    EnelParo    Sinniños
+    """ Devuelve el tipo de familia de entre 8 dada una serie de características. """
+    # Unipersonal    En el paro    Sin niños
+    if tamfamilia == 1 and empleo == 0 and niños == 0:
         tipo = 1
-    elif tamfamilia == 1 and empleo == 1 and niños == 0:                    #Unipersonal    Trabajando  Sinniños
+    # Unipersonal    Trabajando  Sin niños
+    elif tamfamilia == 1 and empleo == 1 and niños == 0:
         tipo = 2
-    elif tamfamilia >= 2 and empleo == 0 and niños == 0:                    #Multipersonal  EnelParo    Sinniños
+    # Multipersonal  En el paro    Sin niños
+    elif tamfamilia >= 2 and empleo == 0 and niños == 0:
         tipo = 3
-    elif tamfamilia >= 2 and empleo == 1 and niños == 0:                    #Multipersonal  Trabajando  Sinniños
+    # Multipersonal  Trabajando  Sin niños
+    elif tamfamilia >= 2 and empleo == 1 and niños == 0:
         tipo = 4
-    elif tamfamilia >= 2 and empleo == 0 and niños == 1 and monopar == 1:   #Multipersonal  EnelParo    Conniños    Monoparental
+    # Multipersonal  En el paro    Con niños    Monoparental
+    elif tamfamilia >= 2 and empleo == 0 and niños == 1 and monopar == 1:
         tipo = 5
-    elif tamfamilia >= 2 and empleo == 0 and niños == 1 and monopar == 0:   #Multipersonal  EnelParo    Conniños    NoMonoparental
+    # Multipersonal  En el paro    Con niños    No Monoparental
+    elif tamfamilia >= 2 and empleo == 0 and niños == 1 and monopar == 0:
         tipo = 6
-    elif tamfamilia >= 2 and empleo == 1 and niños == 1 and monopar == 1:   #Multipersonal  Trabajando  Conniños    Monoparental
+    # Multipersonal  Trabajando  Con niños    Monoparental
+    elif tamfamilia >= 2 and empleo == 1 and niños == 1 and monopar == 1:
         tipo = 7
-    elif tamfamilia >= 2 and empleo == 1 and niños == 1 and monopar == 0:   #Multipersonal  Trabajando  Conniños    NoMonoparental
+    # Multipersonal  Trabajando  Con niños    No Monoparental
+    elif tamfamilia >= 2 and empleo == 1 and niños == 1 and monopar == 0:
         tipo = 8
     return tipo
 
@@ -222,6 +244,7 @@ def simplificador(generos, edadmin, edadmax):
     return edades
 
 def siguientes_hijos(edad1, n_ninyos):
+    """ Calcular edades coherentes en caso de que haya más de un hijo en una familia."""
     global num_ciudadanos, id_pers
     if n_ninyos == 1:
         genero_demas = []
@@ -499,4 +522,4 @@ for distrito in range(INPUT_DATA["num_distritos"]):
         familiador()
         #print(poblacion)
         print(num_ciudadanos[0], num_ciudadanos[1], len(lista_familias))
-#planear(lista_familias)
+planear(lista_familias)

@@ -1,41 +1,40 @@
+""" Clase Familia. """
+
 import numpy as np
-# Probability of house size given a number of members.
-TIPOS_CASA = [(0.146, 0.736, 0.118), (0.09, 0.743, 0.167), (0.055, 0.751, 0.194),
-  (0.039, 0.697, 0.264), (0.012, 0.802, 0.186), (0.033, 0.767, 0.2), (0.063, 0.812, 0.125)]
+from utils import INPUT_DATA
 
 class Familia:
-  def __init__(self, id_familia, personas, tipos_casas, tipofamilia):
-    self.id_familia = id_familia
-    self.personas = personas
-    self.casa = self.coordenadas(personas, tipos_casas)
-    self.tipofamilia = tipofamilia
-    """
-    print("Se ha creado la familia " + str(self.id_familia) + " que se compone de ")
-    for i in self.personas:
-      print(f"- {i}")
-    print("y que se ubica en " + str(self.casa))
-    """
+	""" Representa una familia con su id, sus personas, las coordenadas de su hogar y su tipo. """
+	def __init__(self, id_familia, personas, tipos_casas, tipofamilia):
+		self.id_familia = id_familia # id numérico.
+		self.personas = personas # Lista de personas.
+		self.casa = self.coordenadas(personas, tipos_casas) # Coordenadas de la casa.
+		self.tipofamilia = tipofamilia # Tipo de familia.
+		"""
+		print("Se ha creado la familia " + str(self.id_familia) + " que se compone de ")
+		for i in self.personas:
+			print(f"- {i}")
+		print("y que se ubica en " + str(self.casa))
+		"""
 
-  def coordenadas(self, personas, tipos_casas):
-    """ Returns some coordinates of a house. """
-    coordenadas = []
-    num_per = len(personas)
-    selected = np.random.choice(range(3), p=TIPOS_CASA[num_per])
-    if len(tipos_casas[selected]) > 0:
-      lista = tipos_casas[selected]
-    else:
-      for i in range(3):
-        if len(tipos_casas[i]) > 0:
-          lista = tipos_casas[i]
-          break
-    coordenadas = lista.pop(0)
-    if len(coordenadas) == 0:
-      for i in tipos_casas:
-        if len(i) > 0:
-          coordenadas = i.pop()
+	def coordenadas(self, personas, tipos_casas):
+		""" Devuelve unas coordenadas de una casa. """
+		coordenadas = []
+		num_per = len(personas)
+		# Seleccionar aleatoriamente una casa grande, mediana o pequeña.
+		selected = np.random.choice(range(3), p=INPUT_DATA["tipos_casas"][num_per])
+		# Si esa lista tiene casas aún, se extrae la primera.
+		if len(tipos_casas[selected]) > 0:
+			lista = tipos_casas[selected]
+		# Si no, se selecciona de cualquiera de las otras listas en las que sea posible.
+		else:
+			for i in range(3):
+				if len(tipos_casas[i]) > 0:
+					lista = tipos_casas[i]
+					break
+		coordenadas = lista.pop(0)
+		return coordenadas
 
-    return coordenadas
-
-  def sort_personas(self):
-    self.personas.sort(reverse=True, key = lambda p: p.edad)
-
+	def sort_personas(self):
+		""" Ordena las personas de una familia por edad. """
+		self.personas.sort(reverse=True, key = lambda p: p.edad)
