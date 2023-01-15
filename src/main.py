@@ -389,7 +389,7 @@ def familiador():
                     personas.append(Persona(id_pers, edades[per], generos[per]))
                     id_pers+=1
             # ABUELX Y NIETX
-            if subsubtipo == 5 and num_ciudadanos[2] + num_ciudadanos[3] > 0:
+            if subsubtipo == 1 and num_ciudadanos[2] + num_ciudadanos[3] > 0:
                 ninyos = monopar = 1
                 PORC_GENERO = DATOS_TIPO2["abuelo_nieto"]["genero"]
                 generos = []
@@ -576,4 +576,4 @@ if __name__ == "__main__":
 
     ### PLANES.
     # Una vez se obtienen las familias, se les asocia una serie de planes.
-    #planear(lista_familias)
+    planear(lista_familias)

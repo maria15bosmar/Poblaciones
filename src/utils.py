@@ -1,5 +1,7 @@
-import pandas as pd
+""" Contiene constantes y funciones para el programa. """
+
 import json
+import pandas as pd
 
 MAYORIA_EDAD = 25
 # PATHS
@@ -14,27 +16,34 @@ PATH_JSON_PLANEADOR = PATH_DATOS + "inputs_planeador.json"
 with open(PATH_JSON_PLANEADOR) as f:
     INPUT_DATA = json.load(f)
 
+# Datos del tamaño de las casas.
 TAM_CASAS = INPUT_DATA["tam_casas"]
+# Límites del mapa.
 MAX_X = INPUT_DATA["max_x"]
 MAX_Y = INPUT_DATA["max_y"]
 MIN_X = INPUT_DATA["min_x"]
 MIN_Y = INPUT_DATA["min_y"]
 
 def leer_catastro(distrito):
+    """ Lee los ficheros del catastro y devuelve tres listas de coordenadas de casas. """
     df = pd.read_csv(PATH_CATASTRO + "casasd" + str(distrito)+ ".csv")
     df[["x", "y"]] = df[["x", "y"]] / 100
+    # Casas grandes.
     casas_g = df.loc[df.iloc[:,-1]>TAM_CASAS[1]].iloc[:,:-1].values.tolist()
+    # Casas medianas.
     casas_p = df.loc[df.iloc[:,-1]<TAM_CASAS[0]].iloc[:,:-1].values.tolist()
-    casas_m = df.loc[(df.iloc[:,-1]<=TAM_CASAS[1]) & (df.iloc[:,-1]>=TAM_CASAS[0])].iloc[:,:-1].values.tolist()
+    # Casas pequeñas.
+    casas_m = df.loc[(df.iloc[:,-1]<=TAM_CASAS[1]) & (df.iloc[:,-1] >= TAM_CASAS[0])].iloc[:,:-1].values.tolist()
     return casas_g, casas_m, casas_p
 
 def leer_censo(distrito):
-    """ Returns population datasets. """
+    """ Devuelve los datos del censo. """
+    # Listas de edades por género.
     df = pd.read_csv(PATH_CENSO + "distrito_" + str(distrito)+ ".csv", delimiter=";")
-    hombres = df.iloc[25:,0].to_numpy().sum()
-    mujeres = df.iloc[25:,1].to_numpy().sum()
-    ninyos = df.iloc[:25,0].to_numpy().sum()
-    ninyas = df.iloc[:25,1].to_numpy().sum()
+    hombres = df.iloc[25:,0].to_numpy().sum() # Número de hombres adultos.
+    mujeres = df.iloc[25:,1].to_numpy().sum() # Número de mujeres adultas.
+    ninyos = df.iloc[:25,0].to_numpy().sum() # Número de varones menores de 25.
+    ninyas = df.iloc[:25,1].to_numpy().sum() # Número de mujeres menores de 25.
     return df.iloc[:,0], df.iloc[:,1], hombres, mujeres, ninyos, ninyas
 
 def buscar_clave(hash_table: dict, clave: any):
@@ -45,11 +54,12 @@ def buscar_clave(hash_table: dict, clave: any):
             return hash_table["valores"][i]
     return -1
 
-# PLANEADOR
+# Nombres de las columnas de los ficheros del consorcio.
 all_cols = ["id_hog","id_per", "id_via", "sexo", "trabajo", "carnet", "hora_ini", 
                     "hora_fin", "mot_origen", "mot_destino", "vehiculo", "edad", 
                     "num_veh", "num_miembros_fam", "num_adultos", "pueblo_dest"]
 
+# Lista auxiliar para las strings de los planes.
 num_to_xml = [
     ["m", "f"],
     [["yes", "always"], ["no", "never"]],
