@@ -400,24 +400,28 @@ def familiador():
                     generos[1] = 1
                 elif num_ciudadanos[1] < 1:
                     generos[1] = 0
-                PORC_EDAD_NIETO = DATOS_TIPO2["abuelo_nieto"]["edad_nieto"]
-                # Si no quedan adultos, se escoge un niño y viceversa.
-                if (num_ciudadanos[generos[0]] < 2 and num_ciudadanos[generos[0] + 2] < 1
-                    or num_ciudadanos[generos[0]] < 2):
-                    generos[0] = int(not generos[0])
-                elif num_ciudadanos[generos[0] + 2] < 1:
-                    seleccion = np.random.choice(range(3, 7), p=softmax(PORC_EDAD_NIETO[3:]))
-                else:
-                    seleccion = np.random.choice(7, p=PORC_EDAD_NIETO)
-                seleccion = np.random.choice(7, p=PORC_EDAD_NIETO)
-                rangos = ((0, 9), (10, 19), (20, 24), (25, 29), (30, 34), (35, 39),
-                    (40, 50))
-                nieto = elegir_personas(rangos[seleccion][0], rangos[seleccion][1], generos[0])
-                personas.append(Persona(id_pers, nieto, generos[0]))
-                id_pers += 1
                 edades = np.random.choice(range(34, 86, 10), p=DATOS_TIPO2["abuelo_nieto"]["edad_abuelo"])
                 abuelo = elegir_personas(edades, edades + 9, generos[1])
                 personas.append(Persona(id_pers, abuelo, generos[1]))
+                id_pers += 1
+                # Nieto.
+                PORC_EDAD_NIETO = DATOS_TIPO2["abuelo_nieto"]["edad_nieto"]
+                # Si no quedan adultos, se escoge un niño y viceversa.
+                seleccion = np.random.choice(7, p=PORC_EDAD_NIETO)
+                rangos = ((0, 9), (10, 19), (20, 24), (25, 29), (30, 34), (35, 39),
+                    (40, 50))
+                if seleccion < 3 and num_ciudadanos[generos[0] + 2] < 1:
+                    if num_ciudadanos[generos[0]] < 1:
+                        generos[0] = int(not generos[0])
+                    else:
+                        seleccion = 3
+                elif seleccion >= 3 and num_ciudadanos[generos[0]] < 1:
+                    if num_ciudadanos[generos[0] + 2] < 1:
+                        generos[0] = int(not generos[0])
+                    else:
+                        seleccion = 0
+                nieto = elegir_personas(rangos[seleccion][0], rangos[seleccion][1], generos[0])
+                personas.append(Persona(id_pers, nieto, generos[0]))
                 id_pers += 1
     ### FAMILIA DE TRES PERSONAS.
     elif n_pers == 3:
