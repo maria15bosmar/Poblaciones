@@ -2,7 +2,8 @@
 
 import json
 import numpy as np
-from utils import PATH_JSON_FAMILIADOR
+from utils import PATH_JSON_FAMILIADOR, probabilidad_disminuida
+from persona import Persona
 
 class Tipo_familia:
     id_fam = -1
@@ -130,10 +131,10 @@ class Tipo_familia:
             else:
                 edades.append(edades[-1] + probabilidad_disminuida(elecciones[diferencias[i]][0], elecciones[diferencias[i]][1]))
             # Si no quedan adultos de ese género, se prueba con jóvenes.
-            if edades[-1] + 4 > 24 and num_ciudadanos[genero_demas[i]] == 0:
-                nuevo_hijo = elegir_personas(20, -1, genero_demas[i])
+            if edades[-1] + 4 > 24 and self.num_ciudadanos[genero_demas[i]] == 0:
+                nuevo_hijo = self.elegir_personas(20, -1, genero_demas[i])
             else:
-                nuevo_hijo = elegir_personas(edades[i], -1, genero_demas[i])
+                nuevo_hijo = self.elegir_personas(edades[i], -1, genero_demas[i])
             # Agregar la persona.
             id_pers += 1
             hijos.append(Persona(id_pers, nuevo_hijo, genero_demas[i]))
