@@ -8,7 +8,7 @@ class Unipersonal(Tipo_familia):
     def __init__(self) -> None:
         pass
 
-    def formar_familia(self):
+    def generar_personas(self):
         # Listas de probabilidad para numpy.
         PORC_EDAD = self.INPUTS_FAMILIADOR["familiador"]["1"]["edad"]
         PORC_GENERO = self.INPUTS_FAMILIADOR["familiador"]["1"]["genero"]

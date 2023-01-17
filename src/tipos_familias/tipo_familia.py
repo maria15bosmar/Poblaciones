@@ -4,21 +4,66 @@ import json
 import numpy as np
 from utils import PATH_JSON_FAMILIADOR, probabilidad_disminuida
 from persona import Persona
+from familia import Familia
 
 class Tipo_familia:
     id_fam = -1
     id_pers = -1
-    def __init__(self, poblacion, num_ciudadanos, n_pers) -> None:
+    def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
         with open(PATH_JSON_FAMILIADOR) as f:
             self.INPUTS_FAMILIADOR = json.load(f)
         self.poblacion = poblacion
         self.num_ciudadanos = num_ciudadanos
         self.personas = []
         self.n_pers = n_pers
+        self.subtipos = subtipos
+        self.ninyos = 0
+        self.monopar = 0
         Tipo_familia.id_fam += 1
 
-    def formar_familia(self):
+    def generar_personas(self):
         return self.personas
+
+    def generar_familia(self, casas):
+        personas = self.generar_personas()
+        prob_trabajo = self.INPUTS_FAMILIADOR["familiador"]["trabajo"][self.n_pers - 1]
+        for subtipo in self.subtipos:
+            prob_trabajo = prob_trabajo[subtipo]
+        trabajo = np.random.choice(2, p = [prob_trabajo, prob_trabajo - 1])
+        # Calcular el tipo de familia.
+        tipo = Tipo_familia.tipodefamilia(self.n_pers, trabajo, self.ninyos, self.monopar)
+        # Agregar nueva familia.
+        Tipo_familia.id_fam += 1
+        return Familia(Tipo_familia.id_fam, personas, casas, tipo)
+
+    @staticmethod
+    def tipodefamilia(tamfamilia, empleo, niños, monopar):
+        """ Devuelve el tipo de familia de entre 8 dada una serie de características. """
+        # Unipersonal    En el paro    Sin niños
+        if tamfamilia == 1 and empleo == 0 and niños == 0:
+            tipo = 1
+        # Unipersonal    Trabajando  Sin niños
+        elif tamfamilia == 1 and empleo == 1 and niños == 0:
+            tipo = 2
+        # Multipersonal  En el paro    Sin niños
+        elif tamfamilia >= 2 and empleo == 0 and niños == 0:
+            tipo = 3
+        # Multipersonal  Trabajando  Sin niños
+        elif tamfamilia >= 2 and empleo == 1 and niños == 0:
+            tipo = 4
+        # Multipersonal  En el paro    Con niños    Monoparental
+        elif tamfamilia >= 2 and empleo == 0 and niños == 1 and monopar == 1:
+            tipo = 5
+        # Multipersonal  En el paro    Con niños    No Monoparental
+        elif tamfamilia >= 2 and empleo == 0 and niños == 1 and monopar == 0:
+            tipo = 6
+        # Multipersonal  Trabajando  Con niños    Monoparental
+        elif tamfamilia >= 2 and empleo == 1 and niños == 1 and monopar == 1:
+            tipo = 7
+        # Multipersonal  Trabajando  Con niños    No Monoparental
+        elif tamfamilia >= 2 and empleo == 1 and niños == 1 and monopar == 0:
+            tipo = 8
+        return tipo
         
     def quasiadultos(self, cantidad):
         """ Comprueba que existan jóvenes de entre 18 y 24 años. """
