@@ -26,10 +26,12 @@ class Tipo_familia:
 
     def generar_familia(self, casas):
         personas = self.generar_personas()
+        if personas is None:
+            return
         prob_trabajo = self.INPUTS_FAMILIADOR["familiador"]["trabajo"][self.n_pers - 1]
         for subtipo in self.subtipos:
             prob_trabajo = prob_trabajo[subtipo]
-        trabajo = np.random.choice(2, p = [prob_trabajo, prob_trabajo - 1])
+        trabajo = np.random.choice(2, p = [prob_trabajo, 1 - prob_trabajo])
         # Calcular el tipo de familia.
         tipo = Tipo_familia.tipodefamilia(self.n_pers, trabajo, self.ninyos, self.monopar)
         # Agregar nueva familia.
@@ -181,6 +183,6 @@ class Tipo_familia:
             else:
                 nuevo_hijo = self.elegir_personas(edades[i], -1, genero_demas[i])
             # Agregar la persona.
-            id_pers += 1
-            hijos.append(Persona(id_pers, nuevo_hijo, genero_demas[i]))
+            Tipo_familia.id_pers += 1
+            hijos.append(Persona(Tipo_familia.id_pers, nuevo_hijo, genero_demas[i]))
         return hijos

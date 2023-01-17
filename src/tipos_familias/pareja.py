@@ -1,18 +1,27 @@
 """ Familia de pareja. """
 
-from tipo_familia import Tipo_familia
+from tipos_familias.tipo_familia import Tipo_familia
 from persona import Persona
 import numpy as np
 from utils import probabilidad_disminuida
 
 class Pareja(Tipo_familia):
-    def __init__(self, poblacion, num_ciudadanos, n_pers) -> None:
-        super().__init__(poblacion, num_ciudadanos, n_pers)
+    def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
+        super().__init__(poblacion, num_ciudadanos, n_pers, subtipos)
+
+    def check_posible(self):
+        if self.num_ciudadanos[0] + self.num_ciudadanos[1] > 1:
+            if self.n_pers > 2:
+                if self.num_ciudadanos[2] + self.num_ciudadanos[3] > self.n_pers - 2:
+                    return 0
+            else:
+                return 0
+        return -1
 
     def generar_personas(self):
-        ninyos, monopar = 1, 0
         DATOS_TIPO = self.INPUTS_FAMILIADOR["familiador"][str(self.n_pers)]
         if self.n_pers > 2:
+            self.ninyos = 1
             # Género y edad del primer hijx.
             sexo_hijo = self.sexador_hijos(1)
             edad_hijo = self.elegir_personas(0, 24, sexo_hijo)
@@ -26,7 +35,6 @@ class Pareja(Tipo_familia):
             # Resto de hijxs.
             self.personas.extend(self.siguientes_hijos(edad_hijo, 1))
         else:
-            ninyos = 0
             pers1, pers2 = self.parejador(0)
             self.personas += [pers1, pers2]
         return self.personas

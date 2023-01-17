@@ -1,15 +1,20 @@
 """ Familia formada por un abuelo y un nieto. """
 
 import numpy as np
-from tipo_familia import Tipo_familia
+from tipos_familias.tipo_familia import Tipo_familia
 from persona import Persona
 
 class Abuelo_nieto(Tipo_familia):
-    def __init__(self, poblacion, num_ciudadanos) -> None:
-        super().__init__(poblacion, num_ciudadanos)
+    def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
+        super().__init__(poblacion, num_ciudadanos, n_pers, subtipos)
+
+    def check_posible(self):
+        if self.num_ciudadanos[0] + self.num_ciudadanos[1] > 1 and self.num_ciudadanos[2] + self.num_ciudadanos[3] > 0:
+            return 0
+        return -1
 
     def generar_personas(self):
-        ninyos = monopar = 1
+        self.ninyos, self.monopar = 1, 1
         DATOS_TIPO = self.INPUTS_FAMILIADOR["familiador"][str(self.n_pers)]
         PORC_GENERO = DATOS_TIPO["abuelo_nieto"]["genero"]
         generos = []

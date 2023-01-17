@@ -1,12 +1,17 @@
 """ Unidad unipersonal. """
 
 import numpy as np
-from tipo_familia import Tipo_familia
+from tipos_familias.tipo_familia import Tipo_familia
 from persona import Persona
 
 class Unipersonal(Tipo_familia):
-    def __init__(self) -> None:
-        pass
+    def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
+        super().__init__(poblacion, num_ciudadanos, n_pers, subtipos)
+
+    def check_posible(self):
+        if self.num_ciudadanos[0] + self.num_ciudadanos[1] > 0:
+            return 0
+        return -1
 
     def generar_personas(self):
         # Listas de probabilidad para numpy.

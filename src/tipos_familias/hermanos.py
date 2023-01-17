@@ -1,12 +1,17 @@
 """ Familia de hermanos. """
 
 import numpy as np
-from tipo_familia import Tipo_familia
+from tipos_familias.tipo_familia import Tipo_familia
 from persona import Persona
 
 class Hermanos(Tipo_familia):
-    def __init__(self, poblacion, num_ciudadanos, n_pers) -> None:
-        super().__init__(poblacion, num_ciudadanos, n_pers)
+    def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
+        super().__init__(poblacion, num_ciudadanos, n_pers, subtipos)
+
+    def check_posible(self):
+        if self.num_ciudadanos[0] + self.num_ciudadanos[1] > 1:
+            return 0
+        return -1
 
     def generar_personas(self):
         # Edad del primero.
@@ -16,7 +21,7 @@ class Hermanos(Tipo_familia):
         edad = np.random.choice(len(PORC_EDAD), p = PORC_EDAD)
         # Géneros de ambos hermanos.
         PORC_GENERO = DATOS_TIPO["hermanos"]["generos"]
-        elecciones = ((0, 0), (1, 1), (0, 1))
+        elecciones = [[0, 0], [1, 1], [0, 1]]
         # Si no queda algún género se fijan.
         if self.num_ciudadanos[0] < 2:
             generos = [1, 1]
@@ -72,6 +77,5 @@ class Hermanos(Tipo_familia):
         if edadprimero + asumar <= 24: # Para que no se busquen niños
             asumar = 0
         # Encontrar una edad factible para el segundo hermano.
-        print(edadprimero, asumar)
         edades.append(self.elegir_personas(edadprimero+asumar, -3, generos[1]))
         return edades
