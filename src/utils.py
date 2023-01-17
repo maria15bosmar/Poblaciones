@@ -1,6 +1,7 @@
 """ Contiene constantes y funciones para el programa. """
 
 import json
+import numpy as np
 import pandas as pd
 
 MAYORIA_EDAD = 25
@@ -53,6 +54,10 @@ def buscar_clave(hash_table: dict, clave: any):
         if (type(cl) == list and clave in cl) or (clave == cl):
             return hash_table["valores"][i]
     return -1
+
+def probabilidad_disminuida(min, max):
+    """ Devuelve un número en un rango, mayor probabilidad de que salga más bajo. """
+    return round(np.random.beta(2, 5) * (max - min) + min)
 
 # Nombres de las columnas de los ficheros del consorcio.
 all_cols = ["id_hog","id_per", "id_via", "sexo", "trabajo", "carnet", "hora_ini", 
