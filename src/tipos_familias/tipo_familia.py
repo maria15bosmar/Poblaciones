@@ -7,8 +7,6 @@ from persona import Persona
 from familia import Familia
 
 class Tipo_familia:
-    id_fam = -1
-    id_pers = -1
     def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
         with open(PATH_JSON_FAMILIADOR) as f:
             self.INPUTS_FAMILIADOR = json.load(f)
@@ -19,7 +17,6 @@ class Tipo_familia:
         self.subtipos = subtipos
         self.ninyos = 0
         self.monopar = 0
-        Tipo_familia.id_fam += 1
 
     def generar_personas(self):
         return self.personas
@@ -35,8 +32,7 @@ class Tipo_familia:
         # Calcular el tipo de familia.
         tipo = Tipo_familia.tipodefamilia(self.n_pers, trabajo, self.ninyos, self.monopar)
         # Agregar nueva familia.
-        Tipo_familia.id_fam += 1
-        return Familia(Tipo_familia.id_fam, personas, casas, tipo)
+        return Familia(personas, casas, tipo)
 
     @staticmethod
     def tipodefamilia(tamfamilia, empleo, niños, monopar):
@@ -183,6 +179,5 @@ class Tipo_familia:
             else:
                 nuevo_hijo = self.elegir_personas(edades[i], -1, genero_demas[i])
             # Agregar la persona.
-            Tipo_familia.id_pers += 1
-            hijos.append(Persona(Tipo_familia.id_pers, nuevo_hijo, genero_demas[i]))
+            hijos.append(Persona(nuevo_hijo, genero_demas[i]))
         return hijos

@@ -16,10 +16,10 @@ def planear(lista_familias: list):
     familias = familias_reales()
     copia_fams = copy.deepcopy(familias)
     # Escribir el header del fichero de salida.
-    with open('resources/population.xml','w') as f:
+    with open('resources/plans.xml','w') as f:
         f.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">\n\n')
     # Raíz del árbol XML.
-    ET_padre = ET.Element("population")
+    ET_padre = ET.Element("plans")
     # Por cada familia sintética.
     for i, familia in enumerate(lista_familias):
         tipo = familia.tipofamilia
@@ -33,7 +33,7 @@ def planear(lista_familias: list):
             else:
                 familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
     # Escribir el árbol XML con los planes en el fichero de salida.
-    with open('resources/population.xml','a') as f:
+    with open('resources/plans.xml','a') as f:
         f.write(minidom.parseString(ET.tostring(ET_padre)).toprettyxml(indent="\t"))
 
 def familias_reales():

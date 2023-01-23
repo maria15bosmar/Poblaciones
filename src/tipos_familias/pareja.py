@@ -25,8 +25,7 @@ class Pareja(Tipo_familia):
             # Género y edad del primer hijx.
             sexo_hijo = self.sexador_hijos(1)
             edad_hijo = self.elegir_personas(0, 24, sexo_hijo)
-            self.personas.append(Persona(Tipo_familia.id_pers, edad_hijo, sexo_hijo))
-            Tipo_familia.id_pers += 1
+            self.personas.append(Persona(edad_hijo, sexo_hijo))
             # Pareja.
             PORC_EDAD_MADRE = DATOS_TIPO["pareja"]["edad_madre"]
             seleccion = np.random.choice(range(15, 46, 5), p=PORC_EDAD_MADRE)
@@ -110,7 +109,6 @@ class Pareja(Tipo_familia):
         # Obtener las personas y devolverlas.
         age1 = self.elegir_personas(age1, -2, tipo[0])
         age2 = self.elegir_personas(age2, -2, tipo[1])
-        per1 = Persona(Tipo_familia.id_pers, age1, tipo[0])
-        per2 = Persona(Tipo_familia.id_pers + 1, age2, tipo[1])
-        Tipo_familia.id_pers += 2
+        per1 = Persona(age1, tipo[0])
+        per2 = Persona(age2, tipo[1])
         return per1, per2

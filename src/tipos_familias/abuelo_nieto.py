@@ -27,8 +27,7 @@ class Abuelo_nieto(Tipo_familia):
             generos[1] = 0
         edades = np.random.choice(range(34, 86, 10), p=DATOS_TIPO["abuelo_nieto"]["edad_abuelo"])
         abuelo = self.elegir_personas(edades, edades + 9, generos[1])
-        self.personas.append(Persona(Tipo_familia.id_pers, abuelo, generos[1]))
-        Tipo_familia.id_pers += 1
+        self.personas.append(Persona(abuelo, generos[1]))
         # Nieto.
         PORC_EDAD_NIETO = DATOS_TIPO["abuelo_nieto"]["edad_nieto"]
         # Si no quedan adultos, se escoge un niño y viceversa.
@@ -46,5 +45,4 @@ class Abuelo_nieto(Tipo_familia):
             else:
                 seleccion = 0
         nieto = self.elegir_personas(rangos[seleccion][0], rangos[seleccion][1], generos[0])
-        self.personas.append(Persona(Tipo_familia.id_pers, nieto, generos[0]))
-        Tipo_familia.id_pers += 1
+        self.personas.append(Persona(nieto, generos[0]))
