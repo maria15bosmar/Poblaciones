@@ -57,7 +57,7 @@ def familiador():
     
 if __name__ == "__main__":
     ### POR CADA DISTRITO.:
-    for distrito in range(INPUT_DATA["num_distritos"]):
+    for distrito in range(INPUT_DATA["num_distritos"]-6):
         ## DATOS DE LA POBLACIÓN.
         num_ciudadanos = []
         censo = leer_censo(distrito + 1)

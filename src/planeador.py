@@ -16,10 +16,10 @@ def planear(lista_familias: list):
     familias = familias_reales()
     copia_fams = copy.deepcopy(familias)
     # Escribir el header del fichero de salida.
-    with open('resources/plans.xml','w') as f:
-        f.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">\n\n')
+    with open('resources/plans_3.xml','w') as f:
+        f.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v5.dtd">\n\n')
     # Raíz del árbol XML.
-    ET_padre = ET.Element("plans")
+    ET_padre = ET.Element("population")
     # Por cada familia sintética.
     for i, familia in enumerate(lista_familias):
         tipo = familia.tipofamilia
@@ -33,7 +33,7 @@ def planear(lista_familias: list):
             else:
                 familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
     # Escribir el árbol XML con los planes en el fichero de salida.
-    with open('resources/plans.xml','a') as f:
+    with open('resources/plans_3.xml','a') as f:
         f.write(minidom.parseString(ET.tostring(ET_padre)).toprettyxml(indent="\t"))
 
 def familias_reales():
@@ -391,7 +391,7 @@ def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
                     act_ET.set("x", str(x_anterior))
                     act_ET.set("y", str(y_anterior))
                     act_ET.set("start_time", "00:00")
-                    act_ET.set("dur", str(hora_ini))
+                    #act_ET.set("dur", str(hora_ini))
                     act_ET.set("end_time", str(hora_ini))
                 if destinostr == "home":
                     x_nueva = fam_sintetica.casa[0]
@@ -417,11 +417,11 @@ def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
                 if len(fam_consorcio[0][0]) == 1:
                     hora_ini_aux = hora_ini.replace(":", "")
                     duracionfinal = trav_time(hora_ini_aux, 2400)
-                    act_ET.set("dur", str(duracionfinal))
-                    act_ET.set("end_time", "24:00")
+                    #act_ET.set("dur", str(duracionfinal))
+                    #act_ET.set("end_time", "24:00")
                 # Si quedan más.
                 else:
-                    act_ET.set("dur", str(duracion))
+                    #act_ET.set("dur", str(duracion))
                     act_ET.set("end_time", str(hora_fin))
                 x_anterior = x_nueva
                 y_anterior = y_nueva
