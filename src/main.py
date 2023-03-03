@@ -10,6 +10,7 @@ from tipos_familias.hermanos import Hermanos
 from tipos_familias.monopar import Monopar
 from tipos_familias.pareja import Pareja
 from tipos_familias.unipersonal import Unipersonal
+from persona import Persona
 
 lista_familias = []
 
@@ -57,7 +58,9 @@ def familiador():
     
 if __name__ == "__main__":
     ### POR CADA DISTRITO.:
-    for distrito in range(INPUT_DATA["num_distritos"]-6):
+    num_distritos = INPUT_DATA["num_distritos"]
+    for distrito in range(num_distritos):
+        Persona.n_pers_distrito = 0
         ## DATOS DE LA POBLACIÓN.
         num_ciudadanos = []
         censo = leer_censo(distrito + 1)
@@ -81,7 +84,7 @@ if __name__ == "__main__":
         print("DISTRITO", distrito)
         ## CREACIÓN DE FAMILIAS.
         # El bucle continúa hasta que no queden adultos.
-        while num_ciudadanos[0] + num_ciudadanos[1] > 0:
+        while num_ciudadanos[0] + num_ciudadanos[1] > 0 and Persona.n_pers_distrito < MAX_AGENTES//num_distritos:
             # En caso de quedarse sin casas, se restaura la lista de casas partiendo de una copia.
             if len(casas[0]) == 0 and len(casas[1]) == 0 and len(casas[2]) == 0:
                 casas = copy.deepcopy(casascopia)

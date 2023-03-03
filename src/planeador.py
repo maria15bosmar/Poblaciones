@@ -16,7 +16,7 @@ def planear(lista_familias: list):
     familias = familias_reales()
     copia_fams = copy.deepcopy(familias)
     # Escribir el header del fichero de salida.
-    with open('resources/plans_3.xml','w') as f:
+    with open(NOMBRE_FICHERO,'w') as f:
         f.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v5.dtd">\n\n')
     # Raíz del árbol XML.
     ET_padre = ET.Element("population")
@@ -33,7 +33,7 @@ def planear(lista_familias: list):
             else:
                 familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
     # Escribir el árbol XML con los planes en el fichero de salida.
-    with open('resources/plans_3.xml','a') as f:
+    with open(NOMBRE_FICHERO,'a') as f:
         f.write(minidom.parseString(ET.tostring(ET_padre)).toprettyxml(indent="\t"))
 
 def familias_reales():

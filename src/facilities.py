@@ -11,6 +11,7 @@ class Cuadrante:
         self.y1 = nueva[2] # Primera latitud.
         self.y2 = nueva[3] # Segunda latitud.
         # Número de edificios de cada tipo en el cuadrante.
+        # ##### CAMBIAR A DICCIONARIO EXTRAÍDO DE JSON
         self.work = 0
         self.medical = 0
         self.leisure = 0
