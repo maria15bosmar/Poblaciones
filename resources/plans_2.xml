@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v5.dtd">
+<population>
+	<person id="1" sex="m" age="50" license="yes" car_avail="always" employed="no">
+		<plan selected="yes">
+			<act type="home" x="434385.15" y="4464116.94" start_time="00:00" end_time="11:48"/>
+			<leg mode="pt" dep_time="11:48" trav_time="00:02" arr_time="11:50"/>
+			<act type="leisure" x="434405" y="4464229" start_time="11:48" end_time="11:50"/>
+			<leg mode="bike" dep_time="13:18" trav_time="00:02" arr_time="13:20"/>
+			<act type="home" x="434385.15" y="4464116.94" start_time="13:18"/>
+		</plan>
+	</person>
+	<person id="2" sex="m" age="24" license="yes" car_avail="always" employed="yes">
+		<plan selected="yes">
+			<act type="home" x="434436.61" y="4464064.96" start_time="00:00" end_time="09:00"/>
+			<leg mode="car" dep_time="09:00" trav_time="00:20" arr_time="09:20"/>
+			<act type="work" x="437647" y="4468216" start_time="09:00" end_time="09:20"/>
+			<leg mode="car" dep_time="14:00" trav_time="00:20" arr_time="14:20"/>
+			<act type="home" x="434436.61" y="4464064.96" start_time="14:00"/>
+		</plan>
+	</person>
+</population>

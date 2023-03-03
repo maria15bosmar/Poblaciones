@@ -15,7 +15,7 @@
             [20, 21, 22],
             [24]
         ],
-        "valores" : ["pt", "taxi", "car", "bike", "walk"]
+        "valores" : ["pt", "walk", "car", "bike", "walk"]
     },
     "lugar" : {
         "claves" : [1, [2, 3, 7], 4, 5, 6, [8, 9, 10, 11, 12]],
