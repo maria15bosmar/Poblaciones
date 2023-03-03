@@ -4,9 +4,11 @@ import numpy as np
 from utils import INPUT_DATA
 
 class Familia:
+	id_fams = 0
 	""" Representa una familia con su id, sus personas, las coordenadas de su hogar y su tipo. """
-	def __init__(self, id_familia, personas, tipos_casas, tipofamilia):
-		self.id_familia = id_familia # id numérico.
+	def __init__(self, personas, tipos_casas, tipofamilia):
+		self.id_familia = Familia.id_fams # id numérico.
+		Familia.id_fams += 1
 		self.personas = personas # Lista de personas.
 		self.casa = self.coordenadas(personas, tipos_casas) # Coordenadas de la casa.
 		self.tipofamilia = tipofamilia # Tipo de familia.

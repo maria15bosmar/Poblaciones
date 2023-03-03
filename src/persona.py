@@ -2,8 +2,12 @@
 
 class Persona:
     """ Representa a una persona que forma parte de una familia. """
-    def __init__(self, id, edad, genero):
-        self.id = id
+    id_pers = 0
+    n_pers_distrito = 0
+    def __init__(self, edad, genero):
+        self.id = Persona.id_pers
+        Persona.id_pers += 1
+        Persona.n_pers_distrito += 1
         self.edad = edad
         self.genero = genero
 
