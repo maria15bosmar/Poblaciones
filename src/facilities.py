@@ -11,13 +11,9 @@ class Cuadrante:
         self.y1 = nueva[2] # Primera latitud.
         self.y2 = nueva[3] # Segunda latitud.
         # Número de edificios de cada tipo en el cuadrante.
-        # ##### CAMBIAR A DICCIONARIO EXTRAÍDO DE JSON
-        self.work = 0
-        self.medical = 0
-        self.leisure = 0
-        self.shopping = 0
-        self.education = 0
-
+        self.edificios = {}
+        for tipo in INPUT_DATA["tipos_edificios"]["valores"]:
+            self.edificios[tipo] = 0
 
 def usosinmuebles(mapa, x_inicial, y_inicial):
     """ Lee el fichero de inmuebles y los añade a cada cuadrante segun su tipología. """
@@ -40,18 +36,8 @@ def usosinmuebles(mapa, x_inicial, y_inicial):
         df2 = df.loc[df["tipo"] == t]
         for c in df2["celda"].unique():
             df3 = df.loc[df["celda"] == c]
-            if t == "I" or t == "O":
-                mapa[c].work += df3["tamanyo"].values.sum()
-            if t == "Y":
-                mapa[c].medical += df3["tamanyo"].values.sum()
-            if t == "K" or t == "T" or t == "G" or t == "R":
-                mapa[c].leisure += df3["tamanyo"].values.sum()
-            if t == "C":
-                mapa[c].shopping += df3["tamanyo"].values.sum()
-            if t == "E":
-                mapa[c].education += df3["tamanyo"].values.sum()
+            mapa[c].edificios[buscar_clave(INPUT_DATA["tipos_edificios"], t)] += df3["tamanyo"].values.sum()
             return mapa
-
 
 def raster():
     """ Crea la cuadrícula del mapa. """
