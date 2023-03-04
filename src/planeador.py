@@ -34,7 +34,10 @@ def planear(lista_familias: list):
                 familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
     # Escribir el árbol XML con los planes en el fichero de salida.
     with open(NOMBRE_FICHERO,'a') as f:
-        f.write(minidom.parseString(ET.tostring(ET_padre)).toprettyxml(indent="\t"))
+        xml = minidom.parseString(ET.tostring(ET_padre, xml_declaration=False)).toprettyxml(indent="\t")
+        line_break_position = xml.find('\n') + 1
+        headless_xml = xml[line_break_position:]
+        f.write(headless_xml)
 
 def familias_reales():
     """ Devuelve una matriz de 8 columnas con los 8 tipos de familias reales. """
@@ -68,22 +71,6 @@ def masceros(numero):
     elif len(str(numero)) == 3:
         numero = "0" + str(numero)
     return numero
-
-def tipodeviaje(destinostr, cuadrante, mapa):
-    """ Obtiene la puntuación de un tipo de destino en un cuadrante determinado. """
-    if destinostr == "work":
-        puntos = mapa[cuadrante].work
-    elif destinostr == "education":
-        puntos = mapa[cuadrante].education
-    elif destinostr == "shopping":
-        puntos = mapa[cuadrante].shopping
-    elif destinostr == "medical":
-        puntos = mapa[cuadrante].medical
-    elif destinostr == "carry":     ## Falta por implementar carry
-        puntos = mapa[cuadrante].work
-    elif destinostr == "leisure":
-        puntos = mapa[cuadrante].leisure
-    return puntos
 
 def trav_time(hora_ini, hora_fin):
     """ Obtiene la duración de un viaje dadas una hora inicial y una final. """
@@ -124,7 +111,7 @@ def pesoscuadrante(listapuntos, destinostr, mapa):
             cuadrante = dist_afinal_X + dist_afinal_Y * 15
             # En caso de no haber revisado ya ese cuadrante se inserta.
             if cuadrante != cuadrante_anterior:
-                edificios = tipodeviaje(destinostr, cuadrante, mapa)
+                edificios = mapa[cuadrante].edificios[destinostr]
                 if edificios > 0:
                     sumapuntuacion += edificios
                     # Se guarda la suma de puntuaciones para luego usar el random.

@@ -7,6 +7,10 @@
     "max_y" : 4462216,
     "min_x" : 432447,
     "min_y" : 4468216,
+    "tipos_edificios" : {
+        "claves" : [["I", "O"], "E", "C", "Y", ["K", "T", "G"]],
+        "valores": ["work", "education", "shopping", "medical", "leisure"]
+    },
     "modo" : {
         "claves" : [
             [1, 2, 3, 4, 5, 6, 7, 8, 9],
