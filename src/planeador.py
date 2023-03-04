@@ -34,7 +34,10 @@ def planear(lista_familias: list):
                 familias[tipo - 1] = familias[tipo - 1] + copy.deepcopy(copia_fams[tipo - 1])
     # Escribir el árbol XML con los planes en el fichero de salida.
     with open(NOMBRE_FICHERO,'a') as f:
-        f.write(minidom.parseString(ET.tostring(ET_padre)).toprettyxml(indent="\t"))
+        xml = minidom.parseString(ET.tostring(ET_padre, xml_declaration=False)).toprettyxml(indent="\t")
+        line_break_position = xml.find('\n') + 1
+        headless_xml = xml[line_break_position:]
+        f.write(headless_xml)
 
 def familias_reales():
     """ Devuelve una matriz de 8 columnas con los 8 tipos de familias reales. """
