@@ -12,6 +12,8 @@ class Familia:
 		self.personas = personas # Lista de personas.
 		self.casa = self.coordenadas(personas, tipos_casas) # Coordenadas de la casa.
 		self.tipofamilia = tipofamilia # Tipo de familia.
+		for pers in self.personas:
+			pers.posicion = [self.casa[0], self.casa[1]]
 		"""
 		print("Se ha creado la familia " + str(self.id_familia) + " que se compone de ")
 		for i in self.personas:

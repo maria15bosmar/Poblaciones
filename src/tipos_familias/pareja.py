@@ -1,7 +1,7 @@
 """ Familia de pareja. """
 
 from tipos_familias.tipo_familia import Tipo_familia
-from persona import Persona
+from entidades.persona import Persona
 import numpy as np
 from utils import probabilidad_disminuida
 

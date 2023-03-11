@@ -3,8 +3,8 @@
 import json
 import numpy as np
 from utils import PATH_JSON_FAMILIADOR, probabilidad_disminuida
-from persona import Persona
-from familia import Familia
+from entidades.persona import Persona
+from entidades.familia import Familia
 
 class Tipo_familia:
     def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:

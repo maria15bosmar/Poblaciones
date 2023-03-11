@@ -10,6 +10,7 @@ class Persona:
         Persona.n_pers_distrito += 1
         self.edad = edad
         self.genero = genero
+        self.posicion = [0, 0]
 
     def __str__(self) -> str:
         return f"id: {self.id}, edad: {self.edad}, género: {self.genero}"

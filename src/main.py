@@ -10,7 +10,7 @@ from tipos_familias.hermanos import Hermanos
 from tipos_familias.monopar import Monopar
 from tipos_familias.pareja import Pareja
 from tipos_familias.unipersonal import Unipersonal
-from persona import Persona
+from entidades.persona import Persona
 
 lista_familias = []
 

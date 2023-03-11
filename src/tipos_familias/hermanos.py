@@ -2,7 +2,7 @@
 
 import numpy as np
 from tipos_familias.tipo_familia import Tipo_familia
-from persona import Persona
+from entidades.persona import Persona
 
 class Hermanos(Tipo_familia):
     def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
