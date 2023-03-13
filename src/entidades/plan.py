@@ -29,7 +29,7 @@ class Plan:
             self.pueblo_dest = datos[16]
             self.pueblo_orig = datos[17]
 
-    def generate_persona_xml(self,root, persona, tipologia):
+    def generate_persona_xml(self, root, persona, tipologia):
         ET_persona = ET.SubElement(root, 'person')
         ET_persona.set("id", str(persona.id))
         ET_persona.set("sex", num_to_xml[0][persona.genero])
@@ -37,13 +37,14 @@ class Plan:
         ET_persona.set("license", self.license)
         ET_persona.set("car_avail", self.car_avail)
         ET_persona.set("employed", num_to_xml[2][tipologia-1])
-        return ET_persona
+        plan_ET = ET.SubElement(ET_persona, "plan")
+        plan_ET.set("selected", "yes")
+        return plan_ET
     
     def generate_plan_xml(self, root, mapa, fam_sintetica, persona):
-        plan_ET = ET.SubElement(root, "plan")
-        plan_ET.set("selected", "yes")
+        
         if self.id_via == 0:
-            act_ET = ET.SubElement(plan_ET, "act")
+            act_ET = ET.SubElement(root, "act")
             act_ET.set("type", self.mot_origen)
             act_ET.set("x", str(persona.posicion[0]))
             act_ET.set("y", str(persona.posicion[1]))
@@ -56,20 +57,19 @@ class Plan:
         else:
             x_nueva, y_nueva = self.__coordenadas(round(float(persona.posicion[0])),
                 round(float(persona.posicion[1])), mapa)
-        leg_ET = ET.SubElement(plan_ET, "leg")
+        leg_ET = ET.SubElement(root, "leg")
         leg_ET.set("mode", self.vehiculo)
         leg_ET.set("dep_time", self.hora_ini)
         leg_ET.set("trav_time", self.duracion)
         leg_ET.set("arr_time", self.hora_fin)
         # Nueva actividad.
-        act_ET = ET.SubElement(plan_ET, "act")
+        act_ET = ET.SubElement(root, "act")
         act_ET.set("type", self.mot_destino)
         act_ET.set("x", str(x_nueva))
         act_ET.set("y", str(y_nueva))
         act_ET.set("start_time", self.hora_ini)
         act_ET.set("end_time", self.hora_fin)
         persona.posicion = [x_nueva, y_nueva]
-        return plan_ET
     
     @staticmethod
     def __to_hora(numero):
@@ -102,9 +102,9 @@ class Plan:
         """ Toma todos los puntos del círculo y saca de los cuadrantes los valores del tipo buscado. """
         cuadrante_anterior, sumapuntuacion = -1, 0
         listacuadrantes,  listacuadrantes_aux = [], []
-        for k in listapuntos:
-            x_actual = k[0]
-            y_actual = k[1]
+        for punto in listapuntos:
+            x_actual = punto[0]
+            y_actual = punto[1]
             if MIN_X <= x_actual < MAX_X and MIN_Y > y_actual >= MAX_Y:
                 dist_afinal_X = (x_actual - MIN_X) // 400  # Se calcula el cuadrante en X.
                 dist_afinal_Y = (MIN_Y - y_actual) // 400  # Se calcula el cuadrante en Y.
@@ -143,7 +143,7 @@ class Plan:
         """ Devuelve las coordenadas del destino de un viaje. """
         x_nueva, y_nueva = 1, 1
         # Si la persona se desplaza fuera del municipio se dan las cordenadas de la carretera por donde sale del mapa.
-        if self.pueblo_dest != 74:
+        if self.pueblo_dest != INPUT_DATA["codigo_ciudad"]:
             x_nueva, y_nueva = buscar_clave(INPUT_DATA["viajes_fuera"], self.pueblo_dest)
         else:
             # En caso de quedarse en el municipio se ven los lugares posibles a los que ir.
@@ -166,20 +166,17 @@ class Plan:
                 radio = 4000
                 grados = 2.5
             #Si se sale por todos los lados del mapa se reduce el radio
-            if (x_anterior + radio > 438447 and x_anterior - radio < 432447 and
-                y_anterior + radio > 4468216 and x_anterior - radio < 4462216):
+            if (x_anterior + radio > MAX_X and x_anterior - radio < MIN_X and
+                y_anterior + radio > MIN_Y and x_anterior - radio < MAX_Y):
                 radio = round(radio/2)
             # Primer punto a comprobar [x + radio, y]
             x_nueva = x_anterior + radio
             listapuntos.append([x_nueva, y_anterior])
             grados_girados += grados
-            while grados_girados <= 90:  # Se hayan los puntos del 1 cuadrante
+            while grados_girados <= 90:  # Se hallan los puntos del 1 cuadrante
                 alpha = grados_girados * math.pi / 180  # Pasar grados a radianes
-                cos_x_nueva = math.cos(alpha)
-                sin_y_nueva = math.sin(alpha)
-                x_nueva = round(x_anterior + radio * cos_x_nueva)
-                y_nueva = round(y_anterior + radio * sin_y_nueva)
-                listapuntos.append([x_nueva, y_nueva])
+                listapuntos.append([round(x_anterior + radio * math.cos(alpha)), 
+                                    round(y_anterior + radio * math.sin(alpha))])
                 grados_girados += grados
             puntos_cuadrante_1 = len(listapuntos)
             # En caso de tener un punto en 90 grados no hay que aplicarle simetria a ese punto.
@@ -188,22 +185,18 @@ class Plan:
                 # este punto al ser el último de la lista y asi se pilla el anterior.
                 puntos_cuadrante_1 -= 1
             # Se hayan los puntos del 2 cuadrante
-            for i in range(puntos_cuadrante_1):
-                # Se resta 1 para evitar errores de índice.
-                x_nueva = listapuntos[puntos_cuadrante_1 - 1 - i][0]
-                y_nueva = listapuntos[puntos_cuadrante_1 - 1 - i][1]
-                dist_en_x = x_nueva - x_anterior
+            for i, punto in enumerate(reversed(listapuntos)):
+                if grados_girados - grados == 90 and i == 0:
+                    continue
                 # Simetría del punto respecto al eje de ordenadas.
-                listapuntos.append([x_nueva - 2 * dist_en_x, y_nueva])
+                listapuntos.append([punto[0] - 2 * (punto[0] - x_anterior), punto[1]])
             # A los puntos en x - radio y x + radio no se les aplica simetría.
-            puntos_cuadrante_1y2 = len(listapuntos) - 2
-            # Se hayan los puntos del 3 y 4 cuadrante.
-            for j in range(puntos_cuadrante_1y2):
-                x_nueva = listapuntos[puntos_cuadrante_1y2 - j][0]
-                y_nueva = listapuntos[puntos_cuadrante_1y2 - j][1]
-                dist_en_y = y_nueva - y_anterior
+            # Se hallan los puntos del 3 y 4 cuadrante.
+            for i, punto in enumerate(reversed(listapuntos)):
+                if i in (0, 1):
+                    continue
                 # Simetría del punto respecto al eje de abcisas
-                listapuntos.append([x_nueva, y_nueva - 2 * dist_en_y])
+                listapuntos.append([punto[0], punto[1] - 2 * (punto[1] - y_anterior)])
             x_nueva, y_nueva = self.__pesoscuadrante(listapuntos, mapa)
             if x_nueva is None or y_nueva is None:
                 pass

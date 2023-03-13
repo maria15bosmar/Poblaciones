@@ -202,11 +202,11 @@ def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
                 fam_consorcio.pop(0)
         else:
             # Construir el árbol XML.
-            persona_ET = fam_consorcio[0][0][0].generate_persona_xml(padre_ET, persona, tipologia)
+            plan_ET = fam_consorcio[0][0][0].generate_persona_xml(padre_ET, persona, tipologia)
             # Bucle para escribir los planes.
             terminado = False
             while not terminado:
-                fam_consorcio[0][0][0].generate_plan_xml(persona_ET, mapa, fam_sintetica, persona)
+                fam_consorcio[0][0][0].generate_plan_xml(plan_ET, mapa, fam_sintetica, persona)
                 # Se elimina el plan ya asignado.
                 fam_consorcio[0][0].pop(0)
                 # Si no quedan mas personas en la familia se borra la familia
