@@ -96,102 +96,31 @@ def ordenar(fam_consorcio, fam_sintetica, num_hijos_sinte):
 
 def traspaso(fam_consorcio, fam_sintetica, padre_ET, mapa, tipologia):
     """ Se escriben los planes de una familia. """
-    ### COMPROBAR QUE FAMILIA ES APTA.
-    num_hijos_sinte = 0
+    ### COMPROBACIÓN DE COMPATIBILIDAD DE FAMILIA Y CONSORCIO.
     # Se comprueba que coincida el numero de adultos en ambas familias real y sintetica.
+    # Para las tipología 1 y 2 no hace falta hacer comprobación ya que no hay hijos
     if tipologia >= 3:
-        parabucle = 0
-        familiapta = True
         match = False
-        num_adultos_sinte = len(fam_sintetica.personas) 
-        # Caso tipologias 3 y 4 todos son adultos.
-        # Caso tipologias 5, 6, 7 y 8 ver cuantos son adultos y cuantos niños.
-        if tipologia >= 5:
-            num_adultos_sinte = 0
-            hogar_joven = 0
-            for persona in fam_sintetica.personas:
-                if persona.edad > 24:
-                    num_adultos_sinte += 1
-                    hogar_joven += 1
-                if persona.edad <= 24:
-                    num_hijos_sinte += 1
-            # Parejas jovenes uno de los dos de entre 18 y 24 con hijos.
-            if hogar_joven == 1 and tipologia in (6, 8):
-                num_joven = 0
-                for persona in fam_sintetica.personas:
-                    # Se comprueba si hay un solo un progenitor de entre 18 y 24.
-                    if 17 < persona.edad <= 24:
-                        num_joven += 1
-                        joven = persona
-                if num_joven == 1:
-                    pareja = 0
-                    for persona2 in fam_sintetica.personas:
-                        # Busca a alguien que no pueda ser su hijo para luego comprobar que sea su pareja.
-                        if joven != persona2 and joven.edad - persona2.edad <= 15:
-                            # Se comprueba que pueda ser su pareja si tiene mas de 18 y se llevan menos de 15.
-                            if persona2.edad >= 18 and joven.edad - persona2.edad > -15:
-                                pareja += 1    # No puede ser su hijo pero sí su pareja.
-                            else:   # No puede ser su hijo ni su pareja. Familia no válida.
-                                pareja = 0
-                                break
-                    # Es la pareja.
-                    if pareja == 1:
-                        num_adultos_sinte += 1
-                        num_hijos_sinte -= 1
-                    else:
-                        familiapta = False
-                else:
-                    familiapta = False
-            # Parejas jovenes los dos de entre 18 y 24 con hijos.
-            if hogar_joven == 0 and tipologia in (6, 8):
-                pareja = []
-                for persona in fam_sintetica.personas:
-                    # Se comprueba si hay dos progenitores de entre 18 y 24
-                    if 17 < persona.edad <= 24:
-                        pareja.append(persona)
-                # Si los hay se comprueba que el resto de la familia puedan ser sus hijos.
-                # Es decir los tuvieron como min a los 15.
-                if len(pareja) == 2:
-                    posible = True
-                    for persona in fam_sintetica.personas:
-                        if persona not in (pareja[0], pareja[1]):
-                            if pareja[0].edad - persona.edad < 15 or pareja[1].edad - persona.edad < 15:
-                                # Se ha comprobado que uno de los hijos por edad no puede
-                                # ser hijo de uno de los progenitores. Familia no válida.
-                                posible = False
-                                break
-                    if posible is True:
-                        num_adultos_sinte += 2
-                        num_hijos_sinte -= 2
-                    else:
-                        familiapta = False
-                else:
-                    familiapta = False
-        # Una vez comprobado que la familia sea apta.
-        ### COMPROBACIÓN DE COMPATIBILIDAD DE FAMILIA Y CONSORCIO.
-        if familiapta is True:
-            while match is False:
-                num_adultos_consorcio = int(fam_consorcio[0][0][0].num_adultos)
-                num_hijos_consorcio = int(fam_consorcio[0][0][0].num_miembros) - num_adultos_consorcio
-                # Si coinciden el número de adultos y como mucho
-                # hay un niño más se asignan los planes.
-                if (num_adultos_sinte == num_adultos_consorcio and
-                    abs(num_hijos_sinte - num_hijos_consorcio) <= 1):
-                    match = True
-                    # tipologias 5, 6, 7 y 8 que tienen niños
-                    if tipologia >= 5:
-                        fam_sintetica.sort_personas()
-                # Si no coincide se quita la familia del consorcio de la lista y se pone atrás.
-                else:
-                    fam_consorcio.append(fam_consorcio.pop(0))
-                    parabucle += 1
-                    # No quedan familias que se ajusten al tipo que ha salido.
-                    if parabucle == len(fam_consorcio):
-                        return -1
-        # La familia sintética no es apta.
-        else:
-            return -2
-        ordenar(fam_consorcio, fam_sintetica, num_hijos_sinte)
+        parabucle = 0
+        while match is False:
+            num_adultos_consorcio = int(fam_consorcio[0][0][0].num_adultos)
+            num_hijos_consorcio = int(fam_consorcio[0][0][0].num_miembros) - num_adultos_consorcio
+            # Si coinciden el número de adultos y como mucho
+            # hay un niño más se asignan los planes.
+            if (fam_sintetica.n_adultos == num_adultos_consorcio and
+                abs(fam_sintetica.n_hijos - num_hijos_consorcio) <= 1):
+                match = True
+                # tipologias 5, 6, 7 y 8 que tienen niños
+                if tipologia >= 5:
+                    fam_sintetica.sort_personas()
+            # Si no coincide se quita la familia del consorcio de la lista y se pone atrás.
+            else:
+                fam_consorcio.append(fam_consorcio.pop(0))
+                parabucle += 1
+                # No quedan familias que se ajusten al tipo que ha salido.
+                if parabucle == len(fam_consorcio):
+                    return -1
+        ordenar(fam_consorcio, fam_sintetica, fam_sintetica.n_hijos)
     ### ESCRIBIR LOS PLANES.
     for persona in fam_sintetica.personas:
         # Caso de que la persona del consorcio no tenga planes

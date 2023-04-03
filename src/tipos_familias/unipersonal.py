@@ -48,5 +48,5 @@ class Unipersonal(Tipo_familia):
                 genero = 0
         # Obtener la edad y agregar la persona.
         unipersonal = self.elegir_personas(RANGOS_EDAD[edad], RANGOS_EDAD[edad+1]-1, genero)
-        self.personas.append(Persona(unipersonal, genero))
+        self.personas.append(Persona(unipersonal, genero, 1))
         return self.personas

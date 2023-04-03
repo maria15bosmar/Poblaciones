@@ -2,7 +2,7 @@
     "familiador" : {
         "familias" : ["unipersonal", ["monopar_m", "monopar_f", "pareja", ["hermanos", "abuelo_nieto", "nada", "nada"]],
             ["monopar_m", "monopar_f", "pareja", "nada"], ["monopar_m", "monopar_f", "pareja", "nada"], ["pareja", "nada"]],
-        "tipo" : [0.257, 0.302, 0.201, 0.176, 0.039, 0.015, 0.01],
+        "numero_personas" : [0.257, 0.302, 0.201, 0.176, 0.039, 0.015, 0.01],
         "rangos_edad" : [18, 25, 35, 45, 55, 65, 75, 85, 96],
         "1" : {
             "edad" : [0.017, 0.124, 0.149, 0.151, 0.148, 0.143, 0.149, 0.119],

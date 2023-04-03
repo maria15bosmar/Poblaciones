@@ -14,7 +14,6 @@ class Abuelo_nieto(Tipo_familia):
         return -1
 
     def generar_personas(self):
-        self.ninyos, self.monopar = 1, 1
         DATOS_TIPO = self.INPUTS_FAMILIADOR["familiador"][str(self.n_pers)]
         PORC_GENERO = DATOS_TIPO["abuelo_nieto"]["genero"]
         generos = []
@@ -27,7 +26,7 @@ class Abuelo_nieto(Tipo_familia):
             generos[1] = 0
         edades = np.random.choice(range(34, 86, 10), p=DATOS_TIPO["abuelo_nieto"]["edad_abuelo"])
         abuelo = self.elegir_personas(edades, edades + 9, generos[1])
-        self.personas.append(Persona(abuelo, generos[1]))
+        self.personas.append(Persona(abuelo, generos[1], 1))
         # Nieto.
         PORC_EDAD_NIETO = DATOS_TIPO["abuelo_nieto"]["edad_nieto"]
         # Si no quedan adultos, se escoge un niño y viceversa.
@@ -45,4 +44,6 @@ class Abuelo_nieto(Tipo_familia):
             else:
                 seleccion = 0
         nieto = self.elegir_personas(rangos[seleccion][0], rangos[seleccion][1], generos[0])
-        self.personas.append(Persona(nieto, generos[0]))
+        if nieto <= 24:
+            self.ninyos, self.monopar = 1, 1
+        self.personas.append(Persona(nieto, generos[0], 1 if nieto > 24 else 0))

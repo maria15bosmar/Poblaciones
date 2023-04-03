@@ -52,7 +52,7 @@ class Hermanos(Tipo_familia):
         # Obtener edades y agregar personas.
         edades = self.simplificador(generos, RANGOS_EDAD[edad], RANGOS_EDAD[edad+1]-1)
         for per in range(2):
-            self.personas.append(Persona(edades[per], generos[per]))
+            self.personas.append(Persona(edades[per], generos[per], 1))
 
     def simplificador(self, generos, edadmin, edadmax):
         """ Calcular edad de los hermanos. """

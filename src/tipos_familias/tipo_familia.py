@@ -179,5 +179,5 @@ class Tipo_familia:
             else:
                 nuevo_hijo = self.elegir_personas(edades[i], -1, genero_demas[i])
             # Agregar la persona.
-            hijos.append(Persona(nuevo_hijo, genero_demas[i]))
+            hijos.append(Persona(nuevo_hijo, genero_demas[i], 0))
         return hijos

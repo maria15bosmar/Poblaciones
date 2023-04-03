@@ -29,7 +29,7 @@ with open(PATH_JSON_FAMILIADOR) as f:
 def familiador():
     """ Crea una familia sintérica con los datos de los censos. """
     global poblacion, num_ciudadanos, lista_familias, casas
-    datos = INPUTS_FAMILIADOR["familiador"]["tipo"]
+    datos = INPUTS_FAMILIADOR["familiador"]["numero_personas"]
     n_pers = np.random.choice(range(1, 8), p=datos)
     if n_pers > len(INPUTS_FAMILIADOR["familiador"]["familias"]):
         return
