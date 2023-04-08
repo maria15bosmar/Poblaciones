@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 MAYORIA_EDAD = 25
-MAX_AGENTES = 1000
+MAX_AGENTES = 10000000
 NOMBRE_FICHERO = "resources/plans_3.xml"
 # PATHS
 PATH_DATOS = "resources/input_data/"

@@ -1,6 +1,7 @@
 """ Familia formada por un abuelo y un nieto. """
 
 import numpy as np
+from scipy.special import softmax
 from tipos_familias.tipo_familia import Tipo_familia
 from entidades.persona import Persona
 
@@ -19,14 +20,6 @@ class Abuelo_nieto(Tipo_familia):
         generos = []
         for i in range(2):
             generos.append(np.random.choice(2, p=[1 - PORC_GENERO[i], PORC_GENERO[i]]))
-        # Si no quedan ciudadanos adultos de algún tipo, se usa el otro género.
-        if self.num_ciudadanos[0] < 1:
-            generos[1] = 1
-        elif self.num_ciudadanos[1] < 1:
-            generos[1] = 0
-        edades = np.random.choice(range(34, 86, 10), p=DATOS_TIPO["abuelo_nieto"]["edad_abuelo"])
-        abuelo = self.elegir_personas(edades, edades + 9, generos[1])
-        self.personas.append(Persona(abuelo, generos[1], 1))
         # Nieto.
         PORC_EDAD_NIETO = DATOS_TIPO["abuelo_nieto"]["edad_nieto"]
         # Si no quedan adultos, se escoge un niño y viceversa.
@@ -47,3 +40,14 @@ class Abuelo_nieto(Tipo_familia):
         if nieto <= 24:
             self.ninyos, self.monopar = 1, 1
         self.personas.append(Persona(nieto, generos[0], 1 if nieto > 24 else 0))
+        # Abuelo
+        # Si no quedan ciudadanos adultos de algún tipo, se usa el otro género.
+        if self.num_ciudadanos[0] < 1:
+            generos[1] = 1
+        elif self.num_ciudadanos[1] < 1:
+            generos[1] = 0
+        rangos = [x for x in range(34, 86, 10) if x > nieto]
+        
+        edades = np.random.choice(rangos, p=softmax(DATOS_TIPO["abuelo_nieto"]["edad_abuelo"][-len(rangos):]))
+        abuelo = self.elegir_personas(edades, edades + 9, generos[1])
+        self.personas.append(Persona(abuelo, generos[1], 1))
