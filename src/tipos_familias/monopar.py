@@ -20,7 +20,7 @@ class Monopar(Tipo_familia):
         RANGOS_EDAD = self.INPUTS_FAMILIADOR["familiador"]["rangos_edad"]
         # Edad del padre/madre.
         PORC_EDADES = DATOS_TIPO["monopar"]["edad"]
-        edad = np.random.choice(range(1, 6), 1, p=PORC_EDADES)[0]
+        edad = np.random.choice(range(len(PORC_EDADES)), p=PORC_EDADES)
         padre = self.elegir_personas(RANGOS_EDAD[edad], RANGOS_EDAD[edad+1] - 1, self.genero_padre)
         self.personas.append(Persona(padre, self.genero_padre, 1))
         # Edad y género del primer hijo.
