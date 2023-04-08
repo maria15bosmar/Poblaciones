@@ -46,7 +46,7 @@ class Abuelo_nieto(Tipo_familia):
             generos[1] = 1
         elif self.num_ciudadanos[1] < 1:
             generos[1] = 0
-        rangos = [x for x in range(34, 86, 10) if x > nieto]
+        rangos = [x for x in range(34, 86, 10) if x > nieto+30]
         
         edades = np.random.choice(rangos, p=softmax(DATOS_TIPO["abuelo_nieto"]["edad_abuelo"][-len(rangos):]))
         abuelo = self.elegir_personas(edades, edades + 9, generos[1])
