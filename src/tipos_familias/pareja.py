@@ -72,8 +72,8 @@ class Pareja(Tipo_familia):
             if self.quasiadultos(2)[1] == 0:
                 age1 = 25
             else:
-                aux = EDADES[age_range1 + 1]
-                age1 = np.random.randint(aux, aux + 5)
+                aux = EDADES[age_range1]
+                age1 = np.random.randint(aux, aux + 7)
         # Si no hay problemas se elige aleatoriamente la primera edad.
         else:
             aux = EDADES[age_range1]

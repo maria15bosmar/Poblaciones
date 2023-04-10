@@ -163,12 +163,12 @@ class Tipo_familia:
             genero_demas = self.sexador_hijos(n_ninyos)
         edades, hijos = [edad1], [] # Edades de los hijos y personas nuevas.
         # Seleccionar una diferencia de edad para cada hijo con respecto al anterior.
-        elecciones = [0, 1, 2, [3, 9], [10, 20]]
+        elecciones = self.INPUTS_FAMILIADOR["siguientes_hijos"]["diferencia_edad"]
         diferencias = np.random.choice(len(elecciones), n_ninyos, p=self.INPUTS_FAMILIADOR["siguientes_hijos"]["probabilidad_diferencia"])
         # Se establece una edad para cada hijo dadas las diferencias.
         for i in range(n_ninyos):
             # Si la diferencia es un número se suma.
-            if diferencias[i] < 3:
+            if type(elecciones[diferencias[i]]) == int:
                 edades.append(edades[-1] + elecciones[diferencias[i]])
             # Si es un rango se calcula la diferencia con probabilidad disminuida.
             else:

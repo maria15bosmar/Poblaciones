@@ -61,7 +61,7 @@ class Hermanos(Tipo_familia):
         # Encontrar una edad factible para el primer hermano.
         edades.append(self.elegir_personas(edadmin, edadmax, generos[0]))
         # Calcular la diferencia de edad según una probabilidad.
-        elecciones = [[1, 2], [4, 5], [7, 10], [12, 20]]
+        elecciones =self.INPUTS_FAMILIADOR["simplificador"]["diferencia_edad"]
         asumar = np.random.choice(len(elecciones), p=self.INPUTS_FAMILIADOR["simplificador"]["probabilidad_diferencia"])
         asumar = np.random.randint(elecciones[asumar][0], elecciones[asumar][1] + 1)
         # Aleatoriamente se elige si el hermano 1 es el mayor o el menor (multiplicar asumar por -1).
