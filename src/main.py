@@ -58,7 +58,7 @@ def familiador():
     
 if __name__ == "__main__":
     ### POR CADA DISTRITO.:
-    num_distritos = INPUT_DATA["num_distritos"]
+    num_distritos = INPUT_GEO["num_distritos"]
     for distrito in range(num_distritos):
         Persona.n_pers_distrito = 0
         ## DATOS DE LA POBLACIÓN.

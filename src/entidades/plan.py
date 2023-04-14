@@ -3,7 +3,7 @@
 import xml.etree.ElementTree as ET
 import math
 import numpy as np
-from utils import num_to_xml, buscar_clave, INPUT_DATA, MAX_X, MAX_Y, MIN_X, MIN_Y
+from utils import num_to_xml, buscar_clave, INPUT_SALIDA, INPUT_GEO, MAX_X, MAX_Y, MIN_X, MIN_Y
 
 class Plan:
     def __init__(self, datos, tipo) -> None:
@@ -22,9 +22,9 @@ class Plan:
             self.hora_ini = self.__to_hora(datos[6])
             self.hora_fin = self.__to_hora(datos[7])
             self.duracion = self.__trav_time(self.hora_ini, self.hora_fin)
-            self.mot_origen = buscar_clave(INPUT_DATA["lugar"], int(datos[8]))
-            self.mot_destino = buscar_clave(INPUT_DATA["lugar"], int(datos[9]))
-            self.vehiculo = buscar_clave(INPUT_DATA["modo"], int(datos[10]))
+            self.mot_origen = buscar_clave(INPUT_SALIDA["lugar"], int(datos[8]))
+            self.mot_destino = buscar_clave(INPUT_SALIDA["lugar"], int(datos[9]))
+            self.vehiculo = buscar_clave(INPUT_SALIDA["modo"], int(datos[10]))
             self.distancia = datos[11]
             self.pueblo_dest = datos[16]
             self.pueblo_orig = datos[17]
@@ -143,8 +143,8 @@ class Plan:
         """ Devuelve las coordenadas del destino de un viaje. """
         x_nueva, y_nueva = 1, 1
         # Si la persona se desplaza fuera del municipio se dan las cordenadas de la carretera por donde sale del mapa.
-        if self.pueblo_dest != INPUT_DATA["codigo_ciudad"]:
-            x_nueva, y_nueva = buscar_clave(INPUT_DATA["viajes_fuera"], self.pueblo_dest)
+        if self.pueblo_dest != INPUT_GEO["codigo_ciudad"]:
+            x_nueva, y_nueva = buscar_clave(INPUT_GEO["viajes_fuera"], self.pueblo_dest)
         else:
             # En caso de quedarse en el municipio se ven los lugares posibles a los que ir.
             grados_girados = 0

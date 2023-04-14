@@ -1,7 +1,11 @@
 """ Clase Familia. """
 
 import numpy as np
-from utils import INPUT_DATA
+import json
+from utils import PATH_JSON_FAMILIADOR
+
+with open(PATH_JSON_FAMILIADOR) as f:
+	INPUTS_FAMILIADOR = json.load(f)
 
 class Familia:
 	id_fams = 0
@@ -14,6 +18,7 @@ class Familia:
 		self.tipofamilia = tipofamilia # Tipo de familia.
 		self.n_adultos = 0
 		self.n_hijos = 0
+		
 		# Datos numéricos sobre la familia y posición inicial de las personas.
 		for pers in self.personas:
 			pers.posicion = [self.casa[0], self.casa[1]]
@@ -31,7 +36,7 @@ class Familia:
 		coordenadas = []
 		num_per = len(personas)
 		# Seleccionar aleatoriamente una casa grande, mediana o pequeña.
-		selected = np.random.choice(range(3), p=INPUT_DATA["tipos_casas"][num_per])
+		selected = np.random.choice(range(3), p=INPUTS_FAMILIADOR["familiador"]["tipos_casas"][num_per])
 		# Si esa lista tiene casas aún, se extrae la primera.
 		if len(tipos_casas[selected]) > 0:
 			lista = tipos_casas[selected]

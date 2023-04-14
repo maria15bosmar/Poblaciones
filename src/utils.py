@@ -13,19 +13,26 @@ PATH_CENSO = PATH_DATOS + "Censos/"
 PATH_CONSORCIO = PATH_DATOS + "Consorcio/"
 PATH_CATASTRO = PATH_DATOS + "Catastro/"
 PATH_JSON_FAMILIADOR = PATH_DATOS + "inputs_familiador.json"
-PATH_JSON_PLANEADOR = PATH_DATOS + "inputs_planeador.json"
+PATH_JSON_SALIDA = PATH_DATOS + "inputs_salida.json"
+PATH_JSON_GEO = PATH_DATOS + "inputs_geograficas.json"
 
-# DATOS PARA EL PLANEADOR.
-with open(PATH_JSON_PLANEADOR) as f:
-    INPUT_DATA = json.load(f)
+# DATOS DE DEFINICIÓN DEL FICHERO DE SALIDA.
+with open(PATH_JSON_SALIDA) as f:
+    INPUT_SALIDA = json.load(f)
+
+# DATOS DE DEFINICIÓN DEL FICHERO DE SALIDA.
+with open(PATH_JSON_GEO) as f:
+    INPUT_GEO = json.load(f)
+
+
 
 # Datos del tamaño de las casas.
-TAM_CASAS = INPUT_DATA["tam_casas"]
+TAM_CASAS = INPUT_GEO["tam_casas"]
 # Límites del mapa.
-MAX_X = INPUT_DATA["max_x"]
-MAX_Y = INPUT_DATA["max_y"]
-MIN_X = INPUT_DATA["min_x"]
-MIN_Y = INPUT_DATA["min_y"]
+MAX_X = INPUT_GEO["max_x"]
+MAX_Y = INPUT_GEO["max_y"]
+MIN_X = INPUT_GEO["min_x"]
+MIN_Y = INPUT_GEO["min_y"]
 
 def leer_catastro(distrito):
     """ Lee los ficheros del catastro y devuelve tres listas de coordenadas de casas. """
