@@ -3,8 +3,8 @@
 import json
 import numpy as np
 from utils import PATH_JSON_FAMILIADOR, probabilidad_disminuida
-from persona import Persona
-from familia import Familia
+from entidades.persona import Persona
+from entidades.familia import Familia
 
 class Tipo_familia:
     def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
@@ -163,12 +163,12 @@ class Tipo_familia:
             genero_demas = self.sexador_hijos(n_ninyos)
         edades, hijos = [edad1], [] # Edades de los hijos y personas nuevas.
         # Seleccionar una diferencia de edad para cada hijo con respecto al anterior.
-        elecciones = [0, 1, 2, [3, 9], [10, 20]]
+        elecciones = self.INPUTS_FAMILIADOR["siguientes_hijos"]["diferencia_edad"]
         diferencias = np.random.choice(len(elecciones), n_ninyos, p=self.INPUTS_FAMILIADOR["siguientes_hijos"]["probabilidad_diferencia"])
         # Se establece una edad para cada hijo dadas las diferencias.
         for i in range(n_ninyos):
             # Si la diferencia es un número se suma.
-            if diferencias[i] < 3:
+            if type(elecciones[diferencias[i]]) == int:
                 edades.append(edades[-1] + elecciones[diferencias[i]])
             # Si es un rango se calcula la diferencia con probabilidad disminuida.
             else:
@@ -179,5 +179,5 @@ class Tipo_familia:
             else:
                 nuevo_hijo = self.elegir_personas(edades[i], -1, genero_demas[i])
             # Agregar la persona.
-            hijos.append(Persona(nuevo_hijo, genero_demas[i]))
+            hijos.append(Persona(nuevo_hijo, genero_demas[i], 0))
         return hijos

@@ -10,7 +10,7 @@ from tipos_familias.hermanos import Hermanos
 from tipos_familias.monopar import Monopar
 from tipos_familias.pareja import Pareja
 from tipos_familias.unipersonal import Unipersonal
-from persona import Persona
+from entidades.persona import Persona
 
 lista_familias = []
 
@@ -29,7 +29,7 @@ with open(PATH_JSON_FAMILIADOR) as f:
 def familiador():
     """ Crea una familia sintérica con los datos de los censos. """
     global poblacion, num_ciudadanos, lista_familias, casas
-    datos = INPUTS_FAMILIADOR["familiador"]["tipo"]
+    datos = INPUTS_FAMILIADOR["familiador"]["numero_personas"]
     n_pers = np.random.choice(range(1, 8), p=datos)
     if n_pers > len(INPUTS_FAMILIADOR["familiador"]["familias"]):
         return
@@ -58,7 +58,7 @@ def familiador():
     
 if __name__ == "__main__":
     ### POR CADA DISTRITO.:
-    num_distritos = INPUT_DATA["num_distritos"]
+    num_distritos = INPUT_GEO["num_distritos"]
     for distrito in range(num_distritos):
         Persona.n_pers_distrito = 0
         ## DATOS DE LA POBLACIÓN.

@@ -12,7 +12,7 @@ class Cuadrante:
         self.y2 = nueva[3] # Segunda latitud.
         # Número de edificios de cada tipo en el cuadrante.
         self.edificios = {}
-        for tipo in INPUT_DATA["tipos_edificios"]["valores"]:
+        for tipo in INPUT_SALIDA["tipos_edificios"]["valores"]:
             self.edificios[tipo] = 0
 
 def usosinmuebles(mapa, x_inicial, y_inicial):
@@ -36,7 +36,7 @@ def usosinmuebles(mapa, x_inicial, y_inicial):
         df2 = df.loc[df["tipo"] == t]
         for c in df2["celda"].unique():
             df3 = df.loc[df["celda"] == c]
-            mapa[c].edificios[buscar_clave(INPUT_DATA["tipos_edificios"], t)] += df3["tamanyo"].values.sum()
+            mapa[c].edificios[buscar_clave(INPUT_SALIDA["tipos_edificios"], t)] += df3["tamanyo"].values.sum()
             return mapa
 
 def raster():

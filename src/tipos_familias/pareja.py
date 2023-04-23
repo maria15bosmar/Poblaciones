@@ -1,7 +1,7 @@
 """ Familia de pareja. """
 
 from tipos_familias.tipo_familia import Tipo_familia
-from persona import Persona
+from entidades.persona import Persona
 import numpy as np
 from utils import probabilidad_disminuida
 
@@ -25,14 +25,22 @@ class Pareja(Tipo_familia):
             # Género y edad del primer hijx.
             sexo_hijo = self.sexador_hijos(1)
             edad_hijo = self.elegir_personas(0, 24, sexo_hijo)
-            self.personas.append(Persona(edad_hijo, sexo_hijo))
+            self.personas.append(Persona(edad_hijo, sexo_hijo, 0))
             # Pareja.
             PORC_EDAD_MADRE = DATOS_TIPO["pareja"]["edad_madre"]
             seleccion = np.random.choice(range(15, 46, 5), p=PORC_EDAD_MADRE)
             edad_madre = np.random.randint(seleccion, seleccion+5)
-            self.personas.extend(self.parejador(edad_madre+edad_hijo))
+            padres = self.parejador(edad_madre+edad_hijo)
             # Resto de hijxs.
-            self.personas.extend(self.siguientes_hijos(edad_hijo, 1))
+            if self.n_pers > 3:
+                self.personas.extend(self.siguientes_hijos(edad_hijo, self.n_pers - 3))
+            # Comprobar que la edad de los hijos pueda ser factible para casos de jóvenes.
+            for padre in padres:
+                if 17 < padre.edad <= 24:
+                    for hijo in self.personas:
+                        if padre.edad - hijo.edad <= 15:
+                            return
+            self.personas.extend(padres)
         else:
             pers1, pers2 = self.parejador(0)
             self.personas += [pers1, pers2]
@@ -64,8 +72,8 @@ class Pareja(Tipo_familia):
             if self.quasiadultos(2)[1] == 0:
                 age1 = 25
             else:
-                aux = EDADES[age_range1 + 1]
-                age1 = np.random.randint(aux, aux + 5)
+                aux = EDADES[age_range1]
+                age1 = np.random.randint(aux, aux + 7)
         # Si no hay problemas se elige aleatoriamente la primera edad.
         else:
             aux = EDADES[age_range1]
@@ -109,6 +117,6 @@ class Pareja(Tipo_familia):
         # Obtener las personas y devolverlas.
         age1 = self.elegir_personas(age1, -2, tipo[0])
         age2 = self.elegir_personas(age2, -2, tipo[1])
-        per1 = Persona(age1, tipo[0])
-        per2 = Persona(age2, tipo[1])
+        per1 = Persona(age1, tipo[0], 1)
+        per2 = Persona(age2, tipo[1], 1)
         return per1, per2

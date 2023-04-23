@@ -2,7 +2,7 @@
 
 import numpy as np
 from tipos_familias.tipo_familia import Tipo_familia
-from persona import Persona
+from entidades.persona import Persona
 
 class Unipersonal(Tipo_familia):
     def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
@@ -48,5 +48,5 @@ class Unipersonal(Tipo_familia):
                 genero = 0
         # Obtener la edad y agregar la persona.
         unipersonal = self.elegir_personas(RANGOS_EDAD[edad], RANGOS_EDAD[edad+1]-1, genero)
-        self.personas.append(Persona(unipersonal, genero))
+        self.personas.append(Persona(unipersonal, genero, 1))
         return self.personas
