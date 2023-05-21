@@ -17,7 +17,7 @@ def planear(lista_familias: list):
     familias = familias_reales()
     copia_fams = copy.deepcopy(familias)
     # Escribir el header del fichero de salida.
-    with open(NOMBRE_FICHERO,'w') as f:
+    with open(NOMBRE_FICHERO, 'w') as f:
         f.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v5.dtd">\n\n')
     # Raíz del árbol XML.
     ET_padre = ET.Element("population")
@@ -58,8 +58,8 @@ def familias_reales():
             for id_per in df2["id_per"].unique():
                 # Agregar los planes de una persona a la lista de planes de familia.
                 pers_plans = []
-                for plan in df2.loc[df["id_per"] == id_per].values.tolist():
-                    pers_plans.append(Plan(plan, tipo))
+                for plan in df2.loc[df["id_per"] == id_per].iterrows():
+                    pers_plans.append(Plan(plan[1].to_dict(), tipo))
                 fam_plans.append(pers_plans)
             fam_tipo.append(fam_plans)
         all_fams.append(fam_tipo)
