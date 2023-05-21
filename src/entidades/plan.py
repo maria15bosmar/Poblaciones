@@ -7,27 +7,27 @@ from utils import num_to_xml, buscar_clave, INPUT_SALIDA, INPUT_GEO, MAX_X, MAX_
 
 class Plan:
     def __init__(self, datos, tipo) -> None:
-        self.id_pers = datos[1]
-        self.id_hog = datos[0]
-        self.id_via = datos[2] - 1
-        self.num_adultos = datos[15]
-        self.num_miembros = datos[14]
-        self.edad = datos[12]
+        self.id_pers = datos['id_per']
+        self.id_hog = datos['id_hog']
+        self.id_via = datos['id_via'] - 1
+        self.num_adultos = datos['num_adultos']
+        self.num_miembros = datos['num_miembros_fam']
+        self.edad = datos['edad']
         if self.id_via != -2:
-            self.genero = datos[3]
-            carnet = num_to_xml[1][int(datos[5])] if datos[5] == 1 else num_to_xml[1][0]
+            self.genero = datos['sexo']
+            carnet = num_to_xml[1][int(datos['carnet'])] if datos['carnet'] == 1 else num_to_xml[1][0]
             self.license = carnet[0]
             self.car_avail = carnet[1]
             self.employed = num_to_xml[2][tipo-1]
-            self.hora_ini = self.__to_hora(datos[6])
-            self.hora_fin = self.__to_hora(datos[7])
+            self.hora_ini = self.__to_hora(datos['hora_ini'])
+            self.hora_fin = self.__to_hora(datos['hora_fin'])
             self.duracion = self.__trav_time(self.hora_ini, self.hora_fin)
-            self.mot_origen = buscar_clave(INPUT_SALIDA["lugar"], int(datos[8]))
-            self.mot_destino = buscar_clave(INPUT_SALIDA["lugar"], int(datos[9]))
-            self.vehiculo = buscar_clave(INPUT_SALIDA["modo"], int(datos[10]))
-            self.distancia = datos[11]
-            self.pueblo_dest = datos[16]
-            self.pueblo_orig = datos[17]
+            self.mot_origen = buscar_clave(INPUT_SALIDA["lugar"], int(datos['mot_origen']))
+            self.mot_destino = buscar_clave(INPUT_SALIDA["lugar"], int(datos['mot_destino']))
+            self.vehiculo = buscar_clave(INPUT_SALIDA["modo"], int(datos['vehiculo']))
+            self.distancia = datos['distancia']
+            self.pueblo_dest = datos['pueblo_dest']
+            self.pueblo_orig = datos['pueblo_orig']
 
     def generate_persona_xml(self, root, persona, tipologia):
         ET_persona = ET.SubElement(root, 'person')
@@ -42,7 +42,6 @@ class Plan:
         return plan_ET
     
     def generate_plan_xml(self, root, mapa, fam_sintetica, persona):
-        
         if self.id_via == 0:
             act_ET = ET.SubElement(root, "act")
             act_ET.set("type", self.mot_origen)
