@@ -1,1 +1,2 @@
 # Poblaciones
+Generación de poblaciones sintéticas mediante un sistema de reglas. Cambiar las características de entrada (resources/input_data) para variar las características de la población sintética.
