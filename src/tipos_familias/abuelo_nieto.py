@@ -6,8 +6,10 @@ from tipos_familias.tipo_familia import Tipo_familia
 from entidades.persona import Persona
 
 class Abuelo_nieto(Tipo_familia):
+    count = 0
     def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
         super().__init__(poblacion, num_ciudadanos, n_pers, subtipos)
+        Abuelo_nieto.count += 1
 
     def check_posible(self):
         if self.num_ciudadanos[0] + self.num_ciudadanos[1] > 1 and self.num_ciudadanos[2] + self.num_ciudadanos[3] > 0:

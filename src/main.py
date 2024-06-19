@@ -5,6 +5,7 @@ import numpy as np
 from utils import *
 from planeador import planear
 # Tipos de familias.
+from tipos_familias.tipo_familia import Tipo_familia
 from tipos_familias.abuelo_nieto import Abuelo_nieto
 from tipos_familias.hermanos import Hermanos
 from tipos_familias.monopar import Monopar
@@ -30,7 +31,7 @@ def familiador():
     """ Crea una familia sintérica con los datos de los censos. """
     global poblacion, num_ciudadanos, lista_familias, casas
     datos = INPUTS_FAMILIADOR["familiador"]["numero_personas"]
-    n_pers = np.random.choice(range(1, 8), p=datos)
+    n_pers = np.random.choice(range(1, len(datos)+1), p=datos)
     if n_pers > len(INPUTS_FAMILIADOR["familiador"]["familias"]):
         return
     familias = INPUTS_FAMILIADOR["familiador"]["familias"][n_pers - 1]
@@ -95,3 +96,10 @@ if __name__ == "__main__":
     ### PLANES.
     # Una vez se obtienen las familias, se les asocia una serie de planes.
     planear(lista_familias)
+    print(Monopar.count)
+    print(Pareja.count)
+    print(Abuelo_nieto.count)
+    print(Hermanos.count)
+    print(Unipersonal.count)
+    for i in Tipo_familia.n_personas:
+        print(i)

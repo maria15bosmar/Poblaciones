@@ -6,8 +6,10 @@ import numpy as np
 from utils import probabilidad_disminuida
 
 class Pareja(Tipo_familia):
+    count = 0
     def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
         super().__init__(poblacion, num_ciudadanos, n_pers, subtipos)
+        Pareja.count += 1
 
     def check_posible(self):
         if self.num_ciudadanos[0] + self.num_ciudadanos[1] > 1:

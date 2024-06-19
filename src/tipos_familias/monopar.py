@@ -5,9 +5,11 @@ from tipos_familias.tipo_familia import Tipo_familia
 from entidades.persona import Persona
 
 class Monopar(Tipo_familia):
+    count = 0
     def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos, genero_padre) -> None:
         super().__init__(poblacion, num_ciudadanos, n_pers, subtipos)
         self.genero_padre = genero_padre
+        Monopar.count += 1
 
     def check_posible(self):
         if self.num_ciudadanos[self.genero_padre] > 0 and self.num_ciudadanos[2] + self.num_ciudadanos[3] >= self.n_pers - 1:

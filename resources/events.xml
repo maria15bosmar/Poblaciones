@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<events version="1.0">
+	<event time="21600.0" type="actend" person="999" link="1" actType="h"  />
+	<event time="21600.0" type="departure" person="999" link="1" legMode="car"  />
+	<event time="21600.0" type="PersonEntersVehicle" person="999" vehicle="999"  />
+</events>

@@ -7,6 +7,7 @@ from entidades.persona import Persona
 from entidades.familia import Familia
 
 class Tipo_familia:
+    n_personas = [0,0,0]
     def __init__(self, poblacion, num_ciudadanos, n_pers, subtipos) -> None:
         with open(PATH_JSON_FAMILIADOR) as f:
             self.INPUTS_FAMILIADOR = json.load(f)
@@ -14,6 +15,7 @@ class Tipo_familia:
         self.num_ciudadanos = num_ciudadanos
         self.personas = []
         self.n_pers = n_pers
+        Tipo_familia.n_personas[n_pers-1] += 1
         self.subtipos = subtipos
         self.ninyos = 0
         self.monopar = 0

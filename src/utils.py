@@ -5,14 +5,14 @@ import numpy as np
 import pandas as pd
 
 MAYORIA_EDAD = 25
-MAX_AGENTES = 1000
+MAX_AGENTES = 10000
 NOMBRE_FICHERO = "resources/plans_3.xml"
 # PATHS
 PATH_DATOS = "resources/input_data/"
 PATH_CENSO = PATH_DATOS + "Censos/"
 PATH_CONSORCIO = PATH_DATOS + "Consorcio/"
 PATH_CATASTRO = PATH_DATOS + "Catastro/"
-PATH_JSON_FAMILIADOR = PATH_DATOS + "inputs_familiador.json"
+PATH_JSON_FAMILIADOR = PATH_DATOS + "inputs_familiador4.json"
 PATH_JSON_SALIDA = PATH_DATOS + "inputs_salida.json"
 PATH_JSON_GEO = PATH_DATOS + "inputs_geograficas.json"
 
